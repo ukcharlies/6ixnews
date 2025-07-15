@@ -20,6 +20,9 @@ export default function CategoryNav({
     dispatch(setSelectedCategory(categoryId));
   };
 
+  // Ensure categories is always an array
+  const safeCategories = Array.isArray(categories) ? categories : [];
+
   if (isLoading) {
     return (
       <div className="py-4">
@@ -34,8 +37,6 @@ export default function CategoryNav({
       </div>
     );
   }
-
-  const validCategories = Array.isArray(categories) ? categories : [];
 
   return (
     <nav className="py-4">
@@ -53,7 +54,7 @@ export default function CategoryNav({
         </button>
 
         {/* Category Buttons */}
-        {validCategories.map((category) => (
+        {safeCategories.map((category) => (
           <button
             key={category.id}
             onClick={() => handleCategoryClick(category.id)}

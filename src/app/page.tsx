@@ -126,6 +126,9 @@ export default function Home() {
     );
   }
 
+  // Ensure categories is always an array
+  const safeCategories = Array.isArray(categories) ? categories : [];
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -135,7 +138,7 @@ export default function Home() {
         <section className="bg-white shadow-sm sticky top-0 z-40">
           <div className="container mx-auto px-4">
             <CategoryNav
-              categories={categories}
+              categories={safeCategories}
               isLoading={categoriesLoading}
             />
           </div>
@@ -153,7 +156,7 @@ export default function Home() {
 
           {/* Top Stories Section */}
           <TopStoriesSection
-            stories={filteredTopStories}
+            stories={filteredTopStories || []}
             isLoading={topStoriesLoading}
             error={topStoriesError}
           />

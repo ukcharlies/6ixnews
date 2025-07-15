@@ -14,6 +14,9 @@ export default function LatestStoriesSection({
   isLoading,
   error,
 }: LatestStoriesSectionProps) {
+  // Add safety check for stories
+  const safeStories = Array.isArray(stories) ? stories : [];
+
   if (error) {
     return (
       <section className="py-8">
@@ -43,11 +46,11 @@ export default function LatestStoriesSection({
   return (
     <section className="py-8">
       <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
-      {stories.length === 0 ? (
+      {safeStories.length === 0 ? (
         <p className="text-gray-600">No stories found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {stories.map((story) => (
+          {safeStories.map((story) => (
             <StoryCard key={story.id} story={story} />
           ))}
         </div>
