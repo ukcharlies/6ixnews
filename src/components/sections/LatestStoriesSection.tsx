@@ -1,6 +1,5 @@
 import { IStory } from "@/types/story";
 import StoryCard from "@/components/ui/StoryCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
 interface LatestStoriesSectionProps {
@@ -14,14 +13,14 @@ export default function LatestStoriesSection({
   isLoading,
   error,
 }: LatestStoriesSectionProps) {
-  // Add safety check for stories
+  // Ensure stories is always an array
   const safeStories = Array.isArray(stories) ? stories : [];
 
   if (error) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
-        <ErrorMessage message="Failed to load top stories" />
+        <h2 className="text-2xl font-bold mb-6">Latest Stories</h2>
+        <ErrorMessage message="Failed to load latest stories" />
       </section>
     );
   }
@@ -29,13 +28,15 @@ export default function LatestStoriesSection({
   if (isLoading) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="h-48 bg-gray-200 rounded-lg mb-4" />
-              <div className="h-4 bg-gray-200 rounded mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-3/4" />
+        <h2 className="text-2xl font-bold mb-6">Latest Stories</h2>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="animate-pulse flex space-x-4">
+              <div className="h-16 w-24 bg-gray-200 rounded" />
+              <div className="flex-1">
+                <div className="h-4 bg-gray-200 rounded mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-3/4" />
+              </div>
             </div>
           ))}
         </div>
@@ -45,13 +46,13 @@ export default function LatestStoriesSection({
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
+      <h2 className="text-2xl font-bold mb-6">Latest Stories</h2>
       {safeStories.length === 0 ? (
-        <p className="text-gray-600">No stories found.</p>
+        <p className="text-gray-600">No latest stories available.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-4">
           {safeStories.map((story) => (
-            <StoryCard key={story.id} story={story} />
+            <StoryCard key={story.id} story={story} variant="horizontal" />
           ))}
         </div>
       )}

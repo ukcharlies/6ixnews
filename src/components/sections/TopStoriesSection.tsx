@@ -1,27 +1,28 @@
 import { IStory } from "@/types/story";
 import StoryCard from "@/components/ui/StoryCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
 interface TopStoriesSectionProps {
   stories: IStory[];
   isLoading?: boolean;
   error?: Error | null;
+  title?: string;
 }
 
 export default function TopStoriesSection({
   stories,
   isLoading,
   error,
+  title = "Top Stories",
 }: TopStoriesSectionProps) {
-  // Add safety check for stories
+  // Ensure stories is always an array
   const safeStories = Array.isArray(stories) ? stories : [];
 
   if (error) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
-        <ErrorMessage message="Failed to load top stories" />
+        <h2 className="text-2xl font-bold mb-6">{title}</h2>
+        <ErrorMessage message={`Failed to load ${title.toLowerCase()}`} />
       </section>
     );
   }
@@ -29,7 +30,7 @@ export default function TopStoriesSection({
   if (isLoading) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
+        <h2 className="text-2xl font-bold mb-6">{title}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse">
@@ -45,7 +46,7 @@ export default function TopStoriesSection({
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
+      <h2 className="text-2xl font-bold mb-6">{title}</h2>
       {safeStories.length === 0 ? (
         <p className="text-gray-600">No stories found.</p>
       ) : (

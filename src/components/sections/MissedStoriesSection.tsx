@@ -1,6 +1,5 @@
 import { IStory } from "@/types/story";
 import StoryCard from "@/components/ui/StoryCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
 interface MissedStoriesSectionProps {
@@ -14,14 +13,14 @@ export default function MissedStoriesSection({
   isLoading,
   error,
 }: MissedStoriesSectionProps) {
-  // Add safety check for stories
+  // Ensure stories is always an array
   const safeStories = Array.isArray(stories) ? stories : [];
 
   if (error) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
-        <ErrorMessage message="Failed to load top stories" />
+        <h2 className="text-2xl font-bold mb-6">Stories You Missed</h2>
+        <ErrorMessage message="Failed to load missed stories" />
       </section>
     );
   }
@@ -29,13 +28,13 @@ export default function MissedStoriesSection({
   if (isLoading) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
+        <h2 className="text-2xl font-bold mb-6">Stories You Missed</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-48 bg-gray-200 rounded-lg mb-4" />
-              <div className="h-4 bg-gray-200 rounded mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-3/4" />
+              <div className="h-32 bg-gray-200 rounded-lg mb-3" />
+              <div className="h-3 bg-gray-200 rounded mb-1" />
+              <div className="h-3 bg-gray-200 rounded w-2/3" />
             </div>
           ))}
         </div>
@@ -45,13 +44,13 @@ export default function MissedStoriesSection({
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
+      <h2 className="text-2xl font-bold mb-6">Stories You Missed</h2>
       {safeStories.length === 0 ? (
-        <p className="text-gray-600">No stories found.</p>
+        <p className="text-gray-600">No missed stories available.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {safeStories.map((story) => (
-            <StoryCard key={story.id} story={story} />
+            <StoryCard key={story.id} story={story} variant="compact" />
           ))}
         </div>
       )}
