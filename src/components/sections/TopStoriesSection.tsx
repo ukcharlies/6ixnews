@@ -93,7 +93,7 @@ export default function TopStoriesSection({
               <div className="relative w-full h-48 rounded-lg overflow-hidden">
                 <Image
                   src={firstStory.banner_image || "/placeholder-image.jpg"}
-                  alt={firstStory.title}
+                  alt={firstStory.title || "News story"}
                   fill
                   className="object-cover"
                 />
@@ -137,7 +137,7 @@ export default function TopStoriesSection({
                 <div className="relative w-24 h-20 rounded-lg overflow-hidden flex-shrink-0">
                   <Image
                     src={story.banner_image || "/placeholder-image.jpg"}
-                    alt={story.title}
+                    alt={story.title || "News story"}
                     fill
                     className="object-cover"
                   />
@@ -165,10 +165,91 @@ export default function TopStoriesSection({
       </div>
 
       {/* Desktop View - Grid Layout */}
-      <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6">
-        {safeStories.map((story) => (
-          <StoryCard key={story.id} story={story} />
-        ))}
+      <div className="hidden md:block">
+        <div className="grid grid-cols-4 grid-rows-2 gap-4 h-96">
+          {/* First Story - Large (2x2) */}
+          {firstStory && (
+            <Link
+              href={`/stories/${firstStory.id}`}
+              className="col-span-2 row-span-2 relative group cursor-pointer"
+            >
+              <div className="relative w-full h-full rounded-lg overflow-hidden">
+                <Image
+                  src={firstStory.banner_image || "/placeholder-image.jpg"}
+                  alt={firstStory.title || "News story"}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                {/* Dark overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+                {/* Text content at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                  <span
+                    className="text-sm font-semibold mb-2 block"
+                    style={{ color: "#F85FD0" }}
+                  >
+                    Latest Today
+                  </span>
+                  <h3 className="text-xl font-bold leading-tight line-clamp-3">
+                    {firstStory.title}
+                  </h3>
+                  {firstStory.subtitle && (
+                    <p className="text-sm text-gray-200 mt-2 line-clamp-2">
+                      {firstStory.subtitle}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Link>
+          )}
+
+          {/* Other Stories - Positioned based on count */}
+          {otherStories.slice(0, 4).map((story, index) => {
+            // For 3 total items (2 other stories), position diagonally
+            let gridClasses = "relative group cursor-pointer";
+            if (otherStories.length === 2) {
+              // Diagonal positioning: top-right and bottom-right
+              if (index === 0) {
+                gridClasses += " col-start-3 row-start-1"; // Top right
+              } else if (index === 1) {
+                gridClasses += " col-start-4 row-start-2"; // Bottom right
+              }
+            }
+
+            return (
+              <Link
+                key={story.id}
+                href={`/stories/${story.id}`}
+                className={gridClasses}
+              >
+                <div className="relative w-full h-full rounded-lg overflow-hidden">
+                  <Image
+                    src={story.banner_image || "/placeholder-image.jpg"}
+                    alt={story.title || "News story"}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {/* Dark overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+                  {/* Text content at bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                    <span
+                      className="text-xs font-semibold mb-1 block"
+                      style={{ color: "#F85FD0" }}
+                    >
+                      News Today
+                    </span>
+                    <h3 className="text-sm font-bold leading-tight line-clamp-2">
+                      {story.title}
+                    </h3>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
