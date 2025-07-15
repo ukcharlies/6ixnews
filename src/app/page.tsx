@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchTopStories,
-  fetchCategories,
   fetchEditorsPicks,
   fetchFeaturedStories,
   fetchLatestStories,
@@ -11,6 +10,7 @@ import {
   fetchCategoryStories,
 } from "@/lib/api/client";
 import { useAppSelector } from "@/lib/hooks/redux";
+import { useCategories } from "@/hooks/useCategories";
 import { useMemo } from "react";
 import Header from "@/components/layout/Header";
 import CategoryNav from "@/components/sections/CategoryNav";
@@ -27,21 +27,12 @@ export default function Home() {
     (state) => state.category
   );
 
-  // Fetch categories
+  // Use the custom hook for categories
   const {
     data: categories = [],
     isLoading: categoriesLoading,
     error: categoriesError,
-  } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      console.log("Fetching categories...");
-      const result = await fetchCategories();
-      console.log("Categories result:", result);
-      return result;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  } = useCategories();
 
   // Fetch stories based on selected category
   const {

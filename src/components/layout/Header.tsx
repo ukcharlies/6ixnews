@@ -3,12 +3,21 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
-import { setSearchQuery, clearSearch } from "@/lib/store/categorySlice";
+import {
+  setSearchQuery,
+  clearSearch,
+  setSelectedCategory,
+} from "@/lib/store/categorySlice";
+import { useCategories } from "@/hooks/useCategories";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { searchQuery } = useAppSelector((state) => state.category);
+
+  // Fetch dynamic categories
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useCategories();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setSearchQuery(e.target.value));
@@ -16,6 +25,11 @@ export default function Header() {
 
   const handleSearchClear = () => {
     dispatch(clearSearch());
+  };
+
+  const handleCategoryClick = (categoryId: number | null) => {
+    dispatch(setSelectedCategory(categoryId));
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -29,36 +43,39 @@ export default function Header() {
             </Link>
 
             <nav className="hidden md:flex space-x-6">
-              <Link
-                href="/"
+              <button
+                onClick={() => handleCategoryClick(null)}
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 Home
-              </Link>
-              <Link
-                href="/africa"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
-                Africa
-              </Link>
-              <Link
-                href="/politics"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
-                Politics
-              </Link>
-              <Link
-                href="/business"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
-                Business
-              </Link>
-              <Link
-                href="/sports"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
-                Sports
-              </Link>
+              </button>
+
+              {categoriesLoading
+                ? // Loading skeleton for categories
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={`header-desktop-skeleton-${i}`}
+                      className="h-5 w-16 bg-gray-200 rounded animate-pulse"
+                    />
+                  ))
+                : // Dynamic category links - filter out invalid categories
+                  categories
+                    .filter(
+                      (category) =>
+                        category &&
+                        typeof category.id === "number" &&
+                        category.name
+                    )
+                    .slice(0, 5)
+                    .map((category) => (
+                      <button
+                        key={`header-desktop-category-${category.id}`}
+                        onClick={() => handleCategoryClick(category.id)}
+                        className="text-gray-700 hover:text-blue-600 font-medium"
+                      >
+                        {category.name}
+                      </button>
+                    ))}
             </nav>
           </div>
 
@@ -174,41 +191,38 @@ export default function Header() {
 
             {/* Mobile Navigation */}
             <nav className="space-y-2">
-              <Link
-                href="/"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-                onClick={() => setMobileMenuOpen(false)}
+              <button
+                onClick={() => handleCategoryClick(null)}
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
               >
                 Home
-              </Link>
-              <Link
-                href="/africa"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Africa
-              </Link>
-              <Link
-                href="/politics"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Politics
-              </Link>
-              <Link
-                href="/business"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Business
-              </Link>
-              <Link
-                href="/sports"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sports
-              </Link>
+              </button>
+
+              {categoriesLoading
+                ? // Loading skeleton for mobile
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={`header-mobile-skeleton-${i}`}
+                      className="h-10 bg-gray-200 rounded animate-pulse mx-4"
+                    />
+                  ))
+                : // Dynamic category buttons for mobile - filter out invalid categories
+                  categories
+                    .filter(
+                      (category) =>
+                        category &&
+                        typeof category.id === "number" &&
+                        category.name
+                    )
+                    .map((category) => (
+                      <button
+                        key={`header-mobile-category-${category.id}`}
+                        onClick={() => handleCategoryClick(category.id)}
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
+                      >
+                        {category.name}
+                      </button>
+                    ))}
             </nav>
 
             <div className="mt-4 pt-4 border-t">

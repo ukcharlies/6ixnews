@@ -2,15 +2,24 @@
 
 import Link from "next/link";
 import { useCategories } from "@/hooks/useCategories";
+import { useAppDispatch } from "@/lib/hooks/redux";
+import { setSelectedCategory } from "@/lib/store/categorySlice";
 
 export default function Footer() {
   const { data: categories = [], isLoading: categoriesLoading } =
     useCategories();
+  const dispatch = useAppDispatch();
+
+  const handleCategoryClick = (categoryId: number | null) => {
+    dispatch(setSelectedCategory(categoryId));
+    // Scroll to top when category is selected
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="text-2xl font-bold text-blue-400">
@@ -21,66 +30,45 @@ export default function Footer() {
               world.
             </p>
           </div>
-
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-gray-400 hover:text-white">
+                <button
+                  onClick={() => handleCategoryClick(null)}
+                  className="text-gray-400 hover:text-white text-left"
+                >
                   Home
-                </Link>
+                </button>
               </li>
               {categoriesLoading
                 ? // Loading skeleton
-                  Array.from({ length: 3 }).map((_, i) => (
+                  Array.from({ length: 5 }).map((_, i) => (
                     <li key={`quick-links-skeleton-${i}`}>
                       <div className="h-4 w-20 bg-gray-700 rounded animate-pulse" />
                     </li>
                   ))
-                : // Dynamic category links (first half)
+                : // All filtered categories
                   categories
-                    .slice(0, Math.ceil(categories.length / 2))
+                    .filter(
+                      (category) =>
+                        category &&
+                        typeof category.id === "number" &&
+                        category.name
+                    )
                     .map((category) => (
                       <li key={`quick-link-${category.id}`}>
-                        <Link
-                          href={`/?category=${category.id}`}
-                          className="text-gray-400 hover:text-white"
+                        <button
+                          onClick={() => handleCategoryClick(category.id)}
+                          className="text-gray-400 hover:text-white text-left"
                         >
                           {category.name}
-                        </Link>
+                        </button>
                       </li>
                     ))}
             </ul>
           </div>
-
-          {/* Categories */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Categories</h3>
-            <ul className="space-y-2">
-              {categoriesLoading
-                ? // Loading skeleton
-                  Array.from({ length: 4 }).map((_, i) => (
-                    <li key={`categories-skeleton-${i}`}>
-                      <div className="h-4 w-24 bg-gray-700 rounded animate-pulse" />
-                    </li>
-                  ))
-                : // Dynamic category links (second half)
-                  categories
-                    .slice(Math.ceil(categories.length / 2))
-                    .map((category) => (
-                      <li key={`category-link-${category.id}`}>
-                        <Link
-                          href={`/?category=${category.id}`}
-                          className="text-gray-400 hover:text-white"
-                        >
-                          {category.name}
-                        </Link>
-                      </li>
-                    ))}
-            </ul>
-          </div>
-
           {/* Contact */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact</h3>
