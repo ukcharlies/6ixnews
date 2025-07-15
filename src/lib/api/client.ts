@@ -18,28 +18,54 @@ async function apiCall<T>(endpoint: string): Promise<T> {
   return data;
 }
 
-// Category endpoints
-export const fetchCategories = async (): Promise<ICategory[]> => {
-  const response = await apiCall<any>("/categories");
-  // Handle the nested data structure: response.data.data
-  if (
-    response &&
-    response.data &&
-    response.data.data &&
-    Array.isArray(response.data.data)
-  ) {
-    return response.data.data;
+export interface Category {
+  id: number;
+  name: string;
+  totalStories: number;
+}
+
+interface CategoryAPIResponse {
+  category_id: number;
+  category_name: string;
+  total_stories: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface CategoriesAPIResponse {
+  message: string;
+  data: {
+    data: CategoryAPIResponse[];
+  };
+}
+
+export const fetchCategories = async (): Promise<Category[]> => {
+  try {
+    const response = await fetch(
+      "https://api.agcnewsnet.com/api/general/categories",
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: CategoriesAPIResponse = await response.json();
+
+    // Transform API response to match our interface
+    return result.data.data.map((category) => ({
+      id: category.category_id,
+      name: category.category_name,
+      totalStories: category.total_stories,
+    }));
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    throw error;
   }
-  // Fallback for direct data property
-  if (response && response.data && Array.isArray(response.data)) {
-    return response.data;
-  }
-  // If it's already an array
-  if (Array.isArray(response)) {
-    return response;
-  }
-  console.warn("Unexpected categories response format:", response);
-  return [];
 };
 
 // Story endpoints

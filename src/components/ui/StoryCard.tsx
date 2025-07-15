@@ -60,7 +60,9 @@ export default function StoryCard({
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded mb-2">
-                    {story.category}
+                    {story.category?.category_name ||
+                      story.category ||
+                      "Uncategorized"}
                   </span>
                   <h3 className="font-semibold text-sm mb-1 line-clamp-2 hover:text-blue-600">
                     {story.title}
@@ -147,11 +149,15 @@ export default function StoryCard({
               </svg>
             </button>
 
-            <div className="absolute bottom-2 left-2">
-              <span className="px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
-                {story.category}
-              </span>
-            </div>
+            {story.category && (
+              <div className="absolute bottom-2 left-2">
+                <span className="px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
+                  {story.category?.category_name ||
+                    story.category ||
+                    "Uncategorized"}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="p-3">
@@ -212,11 +218,15 @@ export default function StoryCard({
             </svg>
           </button>
 
-          <div className="absolute bottom-2 left-2">
-            <span className="px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
-              {story.category}
-            </span>
-          </div>
+          {story.category && (
+            <div className="absolute bottom-2 left-2">
+              <span className="px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
+                {story.category?.category_name ||
+                  story.category ||
+                  "Uncategorized"}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="p-4">

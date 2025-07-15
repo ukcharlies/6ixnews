@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useCategories } from "@/hooks/useCategories";
 
 export default function Footer() {
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useCategories();
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
@@ -25,27 +31,26 @@ export default function Footer() {
                   Home
                 </Link>
               </li>
-              <li>
-                <Link href="/africa" className="text-gray-400 hover:text-white">
-                  Africa
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/politics"
-                  className="text-gray-400 hover:text-white"
-                >
-                  Politics
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/business"
-                  className="text-gray-400 hover:text-white"
-                >
-                  Business
-                </Link>
-              </li>
+              {categoriesLoading
+                ? // Loading skeleton
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <li key={`quick-links-skeleton-${i}`}>
+                      <div className="h-4 w-20 bg-gray-700 rounded animate-pulse" />
+                    </li>
+                  ))
+                : // Dynamic category links (first half)
+                  categories
+                    .slice(0, Math.ceil(categories.length / 2))
+                    .map((category) => (
+                      <li key={`quick-link-${category.id}`}>
+                        <Link
+                          href={`/?category=${category.id}`}
+                          className="text-gray-400 hover:text-white"
+                        >
+                          {category.name}
+                        </Link>
+                      </li>
+                    ))}
             </ul>
           </div>
 
@@ -53,29 +58,26 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Categories</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/sports" className="text-gray-400 hover:text-white">
-                  Sports
-                </Link>
-              </li>
-              <li>
-                <Link href="/health" className="text-gray-400 hover:text-white">
-                  Health
-                </Link>
-              </li>
-              <li>
-                <Link href="/tech" className="text-gray-400 hover:text-white">
-                  Technology
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/opinion"
-                  className="text-gray-400 hover:text-white"
-                >
-                  Opinion
-                </Link>
-              </li>
+              {categoriesLoading
+                ? // Loading skeleton
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <li key={`categories-skeleton-${i}`}>
+                      <div className="h-4 w-24 bg-gray-700 rounded animate-pulse" />
+                    </li>
+                  ))
+                : // Dynamic category links (second half)
+                  categories
+                    .slice(Math.ceil(categories.length / 2))
+                    .map((category) => (
+                      <li key={`category-link-${category.id}`}>
+                        <Link
+                          href={`/?category=${category.id}`}
+                          className="text-gray-400 hover:text-white"
+                        >
+                          {category.name}
+                        </Link>
+                      </li>
+                    ))}
             </ul>
           </div>
 
