@@ -1,6 +1,6 @@
 import { IStory } from "@/types/story";
 import ErrorMessage from "@/components/ui/ErrorMessage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface LatestStoriesSectionProps {
   stories: IStory[];
@@ -13,11 +13,17 @@ export default function LatestStoriesSection({
   isLoading,
   error,
 }: LatestStoriesSectionProps) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [focusedCardIndex, setFocusedCardIndex] = useState<number>(0);
 
   // Ensure stories is always an array
   const safeStories = Array.isArray(stories) ? stories : [];
+
+  // Auto-set initial focused card to middle when stories load
+  useEffect(() => {
+    if (safeStories.length > 0) {
+      setFocusedCardIndex(Math.floor(safeStories.length / 2));
+    }
+  }, [safeStories.length]);
 
   if (error) {
     return (
@@ -54,15 +60,15 @@ export default function LatestStoriesSection({
             ))}
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <div className="flex space-x-4 pb-4">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 w-80 h-64 bg-gray-200 rounded-lg animate-pulse"
-              />
-            ))}
-          </div>
+        <div className="flex items-center justify-center space-x-4 h-80">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className={`bg-gray-200 rounded-lg animate-pulse ${
+                i === 2 ? "w-96 h-80" : "w-48 h-64"
+              }`}
+            />
+          ))}
         </div>
       </section>
     );
@@ -77,6 +83,17 @@ export default function LatestStoriesSection({
     return "";
   };
 
+  const handleCardClick = (index: number) => {
+    setFocusedCardIndex(index);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setFocusedCardIndex(index);
+    }
+  };
+
   return (
     <section className="py-8">
       {/* Header with title and circular indicators */}
@@ -88,18 +105,13 @@ export default function LatestStoriesSection({
           LATEST NEWS
         </h2>
         <div className="flex space-x-2">
-          {safeStories.slice(0, 5).map((_, index) => (
+          {safeStories.slice(0, 7).map((_, index) => (
             <button
               key={index}
               className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                hoveredIndex === index || focusedIndex === index
-                  ? "bg-[#F52A32]"
-                  : "bg-gray-400"
+                focusedCardIndex === index ? "bg-[#F52A32]" : "bg-gray-400"
               }`}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              onFocus={() => setFocusedIndex(index)}
-              onBlur={() => setFocusedIndex(null)}
+              onClick={() => setFocusedCardIndex(index)}
               aria-label={`Go to news item ${index + 1}`}
             />
           ))}
@@ -109,45 +121,175 @@ export default function LatestStoriesSection({
       {safeStories.length === 0 ? (
         <p className="text-gray-600">No latest news available.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <div className="flex space-x-4 pb-4">
-            {safeStories.map((story, index) => (
-              <div
-                key={story.id}
-                className="flex-shrink-0 w-80 h-64 relative group cursor-pointer"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                {/* News Card */}
-                <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  {/* Background Image */}
-                  <img
-                    src={story.banner_image || "/api/placeholder/320/256"}
-                    alt={story.title}
-                    className="w-full h-full object-cover"
-                  />
+        <>
+          {/* Large Screen Layout - Centered Focus */}
+          <div className="hidden lg:block relative overflow-hidden">
+            <div className="flex items-center justify-center space-x-4 min-h-[320px]">
+              {safeStories.map((story, index) => {
+                const isFocused = index === focusedCardIndex;
+                const isAdjacent = Math.abs(index - focusedCardIndex) === 1;
+                const isVisible = Math.abs(index - focusedCardIndex) <= 2;
 
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                if (!isVisible) return null;
 
-                  {/* Category Badge */}
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 text-xs font-medium text-white bg-black/40 backdrop-blur-sm rounded-full">
-                      {getCategoryName(story.category) || "News"}
-                    </span>
+                return (
+                  <div
+                    key={story.id}
+                    className={`relative cursor-pointer transition-all duration-500 ease-in-out ${
+                      isFocused
+                        ? "w-96 h-80 z-20 scale-100"
+                        : isAdjacent
+                        ? "w-48 h-64 z-10 scale-90 opacity-80"
+                        : "w-40 h-56 z-0 scale-75 opacity-60"
+                    }`}
+                    onClick={() => handleCardClick(index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View news: ${story.title}`}
+                  >
+                    {/* News Card */}
+                    <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                      {/* Background Image */}
+                      <img
+                        src={story.banner_image || "/api/placeholder/400/320"}
+                        alt={story.title}
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                      {/* Category Badge */}
+                      <div className="absolute top-4 left-4">
+                        <span
+                          className={`px-3 py-1 text-xs font-medium text-white bg-black/50 backdrop-blur-sm rounded-full ${
+                            isFocused ? "text-sm" : ""
+                          }`}
+                        >
+                          {getCategoryName(story.category) || "News"}
+                        </span>
+                      </div>
+
+                      {/* Title at bottom */}
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <h3
+                          className={`text-white font-bold leading-tight line-clamp-3 transition-all duration-300 ${
+                            isFocused
+                              ? "text-xl"
+                              : isAdjacent
+                              ? "text-base"
+                              : "text-sm"
+                          }`}
+                        >
+                          {story.title}
+                        </h3>
+                        {isFocused && (
+                          <p className="text-gray-200 text-sm mt-2 line-clamp-2 opacity-90">
+                            {story.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Focus indicator ring */}
+                      {isFocused && (
+                        <div className="absolute inset-0 ring-4 ring-[#F52A32] ring-opacity-50 rounded-lg pointer-events-none" />
+                      )}
+                    </div>
                   </div>
+                );
+              })}
+            </div>
 
-                  {/* Title at bottom */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-white font-bold text-lg leading-tight line-clamp-3">
-                      {story.title}
-                    </h3>
+            {/* Navigation arrows */}
+            <button
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors duration-200"
+              onClick={() =>
+                setFocusedCardIndex(Math.max(0, focusedCardIndex - 1))
+              }
+              disabled={focusedCardIndex === 0}
+              aria-label="Previous news item"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+
+            <button
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors duration-200"
+              onClick={() =>
+                setFocusedCardIndex(
+                  Math.min(safeStories.length - 1, focusedCardIndex + 1)
+                )
+              }
+              disabled={focusedCardIndex === safeStories.length - 1}
+              aria-label="Next news item"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Small/Medium Screen Layout - Horizontal Scroll */}
+          <div className="lg:hidden overflow-x-auto">
+            <div className="flex space-x-4 pb-4">
+              {safeStories.map((story, index) => (
+                <div
+                  key={story.id}
+                  className="flex-shrink-0 w-80 h-64 relative group cursor-pointer"
+                >
+                  {/* News Card */}
+                  <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    {/* Background Image */}
+                    <img
+                      src={story.banner_image || "/api/placeholder/320/256"}
+                      alt={story.title}
+                      className="w-full h-full object-cover"
+                    />
+
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+                    {/* Category Badge */}
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 text-xs font-medium text-white bg-black/40 backdrop-blur-sm rounded-full">
+                        {getCategoryName(story.category) || "News"}
+                      </span>
+                    </div>
+
+                    {/* Title at bottom */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="text-white font-bold text-lg leading-tight line-clamp-3">
+                        {story.title}
+                      </h3>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </section>
   );
