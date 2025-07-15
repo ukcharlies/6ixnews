@@ -21,20 +21,20 @@ export async function generateMetadata({
 
     return {
       title: `${story.title} | 6ixNews`,
-      description: story.excerpt,
+      description: story.description,
       openGraph: {
         title: story.title,
-        description: story.excerpt,
-        images: story.imageUrl ? [story.imageUrl] : [],
+        description: story.description,
+        images: story.banner_image ? [story.banner_image] : [],
         type: "article",
         authors: [story.author],
-        publishedTime: story.date,
+        publishedTime: story.created_at,
       },
       twitter: {
         card: "summary_large_image",
         title: story.title,
-        description: story.excerpt,
-        images: story.imageUrl ? [story.imageUrl] : [],
+        description: story.description,
+        images: story.banner_image ? [story.banner_image] : [],
       },
     };
   } catch (error) {

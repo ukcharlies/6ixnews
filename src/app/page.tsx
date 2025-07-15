@@ -311,6 +311,20 @@ export default function Home() {
             title={selectedCategoryId ? "Category Stories" : "Top Stories"}
           />
 
+          {/* Horizontal Separator */}
+          {!selectedCategoryId && (
+            <div className="border-t border-gray-200 my-8"></div>
+          )}
+
+          {/* Latest News Section - positioned right after top stories */}
+          {!selectedCategoryId && (
+            <LatestStoriesSection
+              stories={filteredLatestStories}
+              isLoading={latestStoriesLoading}
+              error={latestStoriesError}
+            />
+          )}
+
           {/* Only show other sections when not filtering by category */}
           {!selectedCategoryId && (
             <>
@@ -324,12 +338,6 @@ export default function Home() {
                 stories={filteredFeaturedStories}
                 isLoading={featuredStoriesLoading}
                 error={featuredStoriesError}
-              />
-
-              <LatestStoriesSection
-                stories={filteredLatestStories}
-                isLoading={latestStoriesLoading}
-                error={latestStoriesError}
               />
 
               <MissedStoriesSection
