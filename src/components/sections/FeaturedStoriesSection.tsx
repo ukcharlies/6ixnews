@@ -20,8 +20,8 @@ export default function FeaturedStoriesSection({
   if (error) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
-        <ErrorMessage message="Failed to load top stories" />
+        <h2 className="text-2xl font-bold mb-6">Featured Stories</h2>
+        <ErrorMessage message="Failed to load featured stories" />
       </section>
     );
   }
@@ -29,7 +29,7 @@ export default function FeaturedStoriesSection({
   if (isLoading) {
     return (
       <section className="py-8">
-        <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
+        <h2 className="text-2xl font-bold mb-6">Featured Stories</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse">
@@ -45,7 +45,7 @@ export default function FeaturedStoriesSection({
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold mb-6">Top Stories</h2>
+      <h2 className="text-2xl font-bold mb-6">Featured Stories</h2>
       {safeStories.length === 0 ? (
         <p className="text-gray-600">No stories found.</p>
       ) : (

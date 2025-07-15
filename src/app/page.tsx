@@ -9,9 +9,10 @@ import {
   fetchMissedStories,
   fetchCategoryStories,
 } from "@/lib/api/client";
-import { useAppSelector } from "@/lib/hooks/redux";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks/redux";
+import { clearSearch } from "@/lib/store/categorySlice";
 import { useCategories } from "@/hooks/useCategories";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Header from "@/components/layout/Header";
 import CategoryNav from "@/components/sections/CategoryNav";
 import TopStoriesSection from "@/components/sections/TopStoriesSection";
@@ -21,8 +22,11 @@ import LatestStoriesSection from "@/components/sections/LatestStoriesSection";
 import MissedStoriesSection from "@/components/sections/MissedStoriesSection";
 import Footer from "@/components/layout/Footer";
 import ErrorMessage from "@/components/ui/ErrorMessage";
+import SearchModal from "@/components/SearchModal";
 
 export default function Home() {
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const dispatch = useAppDispatch();
   const { selectedCategoryId, searchQuery } = useAppSelector(
     (state) => state.category
   );
@@ -116,13 +120,44 @@ export default function Home() {
     enabled: !selectedCategoryId,
   });
 
+  // Combine all stories for search
+  const allStories = useMemo(() => {
+    const stories = [
+      ...topStories,
+      ...editorsPicks,
+      ...featuredStories,
+      ...latestStories,
+      ...missedStories,
+    ];
+
+    // Remove duplicates based on story ID
+    const uniqueStories = stories.filter(
+      (story, index, self) => index === self.findIndex((s) => s.id === story.id)
+    );
+
+    return uniqueStories;
+  }, [topStories, editorsPicks, featuredStories, latestStories, missedStories]);
+
+  // Helper function to safely get category name
+  const getCategoryName = (category: string | object): string => {
+    if (!category) return "";
+    if (typeof category === "string") return category;
+    if (typeof category === "object" && "category_name" in category) {
+      return (category as any).category_name;
+    }
+    return "";
+  };
+
   // Filter stories based on search query
   const filteredTopStories = useMemo(() => {
     if (!searchQuery) return topStories;
     return topStories.filter(
       (story) =>
-        story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        story.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+        story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getCategoryName(story.category)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
     );
   }, [topStories, searchQuery]);
 
@@ -130,10 +165,49 @@ export default function Home() {
     if (!searchQuery) return editorsPicks;
     return editorsPicks.filter(
       (story) =>
-        story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        story.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+        story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getCategoryName(story.category)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
     );
   }, [editorsPicks, searchQuery]);
+
+  const filteredFeaturedStories = useMemo(() => {
+    if (!searchQuery) return featuredStories;
+    return featuredStories.filter(
+      (story) =>
+        story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getCategoryName(story.category)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+    );
+  }, [featuredStories, searchQuery]);
+
+  const filteredLatestStories = useMemo(() => {
+    if (!searchQuery) return latestStories;
+    return latestStories.filter(
+      (story) =>
+        story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getCategoryName(story.category)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+    );
+  }, [latestStories, searchQuery]);
+
+  const filteredMissedStories = useMemo(() => {
+    if (!searchQuery) return missedStories;
+    return missedStories.filter(
+      (story) =>
+        story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getCategoryName(story.category)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+    );
+  }, [missedStories, searchQuery]);
 
   // Debug: Log all data
   console.log("All data:", {
@@ -167,10 +241,17 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header />
+    <div className="min-h-screen flex flex-col">
+      <div className="relative">
+        <Header />
+        <SearchModal
+          isOpen={searchModalOpen}
+          onClose={() => setSearchModalOpen(false)}
+          allStories={allStories}
+        />
+      </div>
 
-      <main className="flex-1">
+      <main className="flex-1 bg-gray-50">
         {/* Category Navigation */}
         <section className="bg-white shadow-sm sticky top-16 z-40">
           <div className="container mx-auto px-4">
@@ -181,12 +262,18 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="container mx-auto px-4 py-6 space-y-12">
+        <div className="container mx-auto px-4 py-8 space-y-8">
           {/* Search Results Info */}
           {searchQuery && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-800">
                 Search results for: <strong>"{searchQuery}"</strong>
+                <button
+                  onClick={() => dispatch(clearSearch())}
+                  className="ml-2 text-blue-600 hover:text-blue-800 underline"
+                >
+                  Clear search
+                </button>
               </p>
             </div>
           )}
@@ -234,19 +321,19 @@ export default function Home() {
               />
 
               <FeaturedStoriesSection
-                stories={featuredStories}
+                stories={filteredFeaturedStories}
                 isLoading={featuredStoriesLoading}
                 error={featuredStoriesError}
               />
 
               <LatestStoriesSection
-                stories={latestStories}
+                stories={filteredLatestStories}
                 isLoading={latestStoriesLoading}
                 error={latestStoriesError}
               />
 
               <MissedStoriesSection
-                stories={missedStories}
+                stories={filteredMissedStories}
                 isLoading={missedStoriesLoading}
                 error={missedStoriesError}
               />
