@@ -22,7 +22,7 @@ import MissedStoriesSection from "@/components/sections/MissedStoriesSection";
 import Footer from "@/components/layout/Footer";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
-export default function Home() {
+function Home() {
   const { selectedCategoryId, searchQuery } = useAppSelector(
     (state) => state.category
   );
@@ -213,3 +213,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;
