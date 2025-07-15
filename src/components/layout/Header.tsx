@@ -254,9 +254,10 @@ export default function Header() {
                     <Link
                       href="/"
                       onClick={() => handleCategoryClick(null)}
-                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                      className="relative text-white font-medium transition-colors group py-2"
                     >
                       Home
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                     </Link>
 
                     {categoriesLoading
@@ -279,9 +280,10 @@ export default function Header() {
                               key={`desktop-category-${category.id}`}
                               href="#"
                               onClick={() => handleCategoryClick(category.id)}
-                              className="text-white hover:text-gray-300 font-medium transition-colors"
+                              className="relative text-white font-medium transition-colors group py-2"
                             >
                               {category.name}
+                              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                             </Link>
                           ))}
                   </nav>
@@ -294,21 +296,24 @@ export default function Header() {
                   <nav className="flex items-center space-x-4">
                     <Link
                       href="/photos"
-                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                      className="relative text-white font-medium transition-colors group py-2"
                     >
                       Photos
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                     </Link>
                     <Link
                       href="/videos"
-                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                      className="relative text-white font-medium transition-colors group py-2"
                     >
                       Videos
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                     </Link>
                     <Link
                       href="/audio"
-                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                      className="relative text-white font-medium transition-colors group py-2"
                     >
                       Audio
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                     </Link>
 
                     <button
@@ -332,18 +337,20 @@ export default function Header() {
 
                     <Link
                       href="/login"
-                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                      className="relative text-white font-medium transition-colors group py-2"
                     >
                       Login
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                     </Link>
 
                     <span className="text-gray-400">/</span>
 
                     <Link
                       href="/signup"
-                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                      className="relative text-white font-medium transition-colors group py-2"
                     >
                       Sign Up
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                     </Link>
                   </nav>
                 </div>
