@@ -154,7 +154,7 @@ export default function Home() {
     return topStories.filter(
       (story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
           .toLowerCase()
           .includes(searchQuery.toLowerCase())
@@ -166,7 +166,7 @@ export default function Home() {
     return editorsPicks.filter(
       (story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
           .toLowerCase()
           .includes(searchQuery.toLowerCase())
@@ -178,7 +178,7 @@ export default function Home() {
     return featuredStories.filter(
       (story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
           .toLowerCase()
           .includes(searchQuery.toLowerCase())
@@ -190,7 +190,7 @@ export default function Home() {
     return latestStories.filter(
       (story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
           .toLowerCase()
           .includes(searchQuery.toLowerCase())
@@ -202,7 +202,7 @@ export default function Home() {
     return missedStories.filter(
       (story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        story.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
           .toLowerCase()
           .includes(searchQuery.toLowerCase())
