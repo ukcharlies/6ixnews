@@ -1,20 +1,26 @@
 export interface IStory {
   id: number;
   title: string;
-  excerpt: string;
-  content: string;
-  date: string;
+  subtitle: string;
+  description: string;
+  status: string;
+  type: string;
   author: string;
-  category:
-    | string
-    | {
-        category_id: number;
-        category_name: string;
-        total_stories: number;
-        created_at: string;
-        updated_at: string;
-      };
-  imageUrl: string;
+  content: string;
+  featured: string;
+  views: number;
+  editors_pick: string | null;
+  top_story: string | null;
+  category: {
+    category_id: number;
+    category_name: string;
+    total_stories: number | null;
+    created_at: string;
+    updated_at: string;
+  };
+  banner_image: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ICategory {
