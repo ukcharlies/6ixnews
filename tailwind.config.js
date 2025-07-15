@@ -10,6 +10,9 @@ module.exports = {
         primary: "#5A5353",
         secondary: "#8b5cf6",
       },
+      fontFamily: {
+        euclid: ["Euclid Circular A", "sans-serif"],
+      },
     },
   },
   plugins: [],
