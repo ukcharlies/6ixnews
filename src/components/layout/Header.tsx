@@ -10,9 +10,11 @@ import {
   setSelectedCategory,
 } from "@/lib/store/categorySlice";
 import { useCategories } from "@/hooks/useCategories";
+import SearchModal from "@/components/SearchModal";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState("");
   const dispatch = useAppDispatch();
   const { searchQuery } = useAppSelector((state) => state.category);
@@ -53,6 +55,10 @@ export default function Header() {
     setMobileMenuOpen(false);
   };
 
+  const handleSearchClick = () => {
+    setSearchModalOpen(true);
+  };
+
   const socialMediaLinks = [
     {
       name: "Instagram",
@@ -82,56 +88,101 @@ export default function Header() {
   ];
 
   return (
-    <header className="font-['Euclid_Circular_A']">
-      {/* Desktop Top Bar - Only visible on large screens */}
-      <div className="hidden lg:block bg-[#D32C89] text-white py-2">
-        <div className="container mx-auto px-4 flex justify-between items-center text-sm">
-          {/* Left side links */}
-          <div className="flex space-x-6">
-            <Link href="/about" className="hover:underline">
-              About Us
-            </Link>
-            <Link href="/contact" className="hover:underline">
-              Contact Us
-            </Link>
-            <Link href="/agc-rate" className="hover:underline">
-              AGC Rate
-            </Link>
-            <Link href="/privacy" className="hover:underline">
-              Privacy Policy
-            </Link>
-          </div>
+    <>
+      <header className="font-['Euclid_Circular_A']">
+        {/* Desktop Top Bar - Only visible on large screens */}
+        <div className="hidden lg:block bg-[#D32C89] text-white py-2">
+          <div className="container mx-auto px-4 flex justify-between items-center text-sm">
+            {/* Left side links */}
+            <div className="flex space-x-6">
+              <Link href="/about" className="hover:underline">
+                About Us
+              </Link>
+              <Link href="/contact" className="hover:underline">
+                Contact Us
+              </Link>
+              <Link href="/agc-rate" className="hover:underline">
+                AGC Rate
+              </Link>
+              <Link href="/privacy" className="hover:underline">
+                Privacy Policy
+              </Link>
+            </div>
 
-          {/* Right side - Date and Social Media */}
-          <div className="flex items-center space-x-6">
-            <span className="font-medium">{currentDateTime}</span>
-            <div className="flex space-x-3">
-              {socialMediaLinks.map((social) => (
-                <Link
-                  key={social.name}
-                  href={social.url}
-                  className="hover:opacity-80 transition-opacity"
-                  aria-label={social.name}
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d={social.icon} />
-                  </svg>
-                </Link>
-              ))}
+            {/* Right side - Date and Social Media */}
+            <div className="flex items-center space-x-6">
+              <span className="font-medium">{currentDateTime}</span>
+              <div className="flex space-x-3">
+                {socialMediaLinks.map((social) => (
+                  <Link
+                    key={social.name}
+                    href={social.url}
+                    className="hover:opacity-80 transition-opacity"
+                    aria-label={social.name}
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d={social.icon} />
+                    </svg>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Header */}
-      <div className="lg:hidden bg-[#1B1B1B]">
-        <div className="flex items-center justify-between py-3 px-4">
-          {/* Left side - Hamburger, Search, and Logo */}
-          <div className="flex items-center space-x-3 flex-1">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-white p-1"
-            >
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-[#1B1B1B]">
+          <div className="flex items-center justify-between py-3 px-4">
+            {/* Left side - Hamburger, Search, and Logo */}
+            <div className="flex items-center space-x-3 flex-1">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white p-1"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+
+              <button onClick={handleSearchClick} className="text-white p-1">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+
+              <Link href="/" className="flex-shrink-0">
+                <Image
+                  src="/AGC logo.png"
+                  alt="AGC News"
+                  width={60}
+                  height={40}
+                  className="h-10 w-auto"
+                />
+              </Link>
+            </div>
+
+            {/* Right side - Profile */}
+            <button className="text-white p-1">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -142,278 +193,245 @@ export default function Header() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
             </button>
+          </div>
+        </div>
 
-            <button className="text-white p-1">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
+        {/* Nav Image - Below mobile header, outside dark background */}
+        <div className="lg:hidden bg-gray-50 px-4 py-3">
+          <div className="w-full h-16 rounded-lg overflow-hidden">
+            <Image
+              src="/nav-image.png"
+              alt="Navigation"
+              width={900}
+              height={64}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
 
-            <Link href="/" className="flex-shrink-0">
-              <Image
-                src="/AGC logo.png"
-                alt="AGC News"
-                width={60}
-                height={40}
-                className="h-10 w-auto"
-              />
-            </Link>
+        {/* Desktop Header - Three Row Layout */}
+        <div className="hidden lg:block bg-[#1B1B1B]">
+          {/* Second Row - Logo and Nav Image */}
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex-shrink-0"></Link>
+
+              <div className="flex-1 mx-8">
+                <div className="w-full h-20 rounded-lg overflow-hidden">
+                  <Image
+                    src="/nav-image.png"
+                    alt="Navigation"
+                    width={800}
+                    height={20}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right side - Profile */}
-          <button className="text-white p-1">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+          {/* Third Row - Logo, Categories, and Options */}
+          <div className="border-t border-gray-600">
+            <div className="container mx-auto px-4 py-3">
+              <div className="flex items-center justify-between">
+                {/* Left side - Logo and Categories */}
+                <div className="flex items-center space-x-8">
+                  <Link href="/" className="flex-shrink-0">
+                    <Image
+                      src="/AGC logo.png"
+                      alt="AGC News"
+                      width={80}
+                      height={40}
+                      className="h-8 w-auto"
+                    />
+                  </Link>
 
-      {/* Nav Image - Below mobile header, outside dark background */}
-      <div className="lg:hidden bg-gray-50 px-4 py-3">
-        <div className="w-full h-16 rounded-lg overflow-hidden">
-          <Image
-            src="/nav-image.png"
-            alt="Navigation"
-            width={900}
-            height={64}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
+                  <nav className="flex space-x-6">
+                    <Link
+                      href="/"
+                      onClick={() => handleCategoryClick(null)}
+                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                    >
+                      Home
+                    </Link>
 
-      {/* Desktop Header - Three Row Layout */}
-      <div className="hidden lg:block bg-[#1B1B1B]">
-        {/* Second Row - Logo and Nav Image */}
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex-shrink-0"></Link>
+                    {categoriesLoading
+                      ? Array.from({ length: 6 }).map((_, i) => (
+                          <div
+                            key={`desktop-skeleton-${i}`}
+                            className="h-6 w-20 bg-gray-600 rounded animate-pulse"
+                          />
+                        ))
+                      : categories
+                          .filter(
+                            (category) =>
+                              category &&
+                              typeof category.id === "number" &&
+                              category.name
+                          )
+                          .slice(0, 6)
+                          .map((category) => (
+                            <Link
+                              key={`desktop-category-${category.id}`}
+                              href="#"
+                              onClick={() => handleCategoryClick(category.id)}
+                              className="text-white hover:text-gray-300 font-medium transition-colors"
+                            >
+                              {category.name}
+                            </Link>
+                          ))}
+                  </nav>
+                </div>
 
-            <div className="flex-1 mx-8">
-              <div className="w-full h-20 rounded-lg overflow-hidden">
-                <Image
-                  src="/nav-image.png"
-                  alt="Navigation"
-                  width={800}
-                  height={20}
-                  className="w-full h-full object-cover"
-                />
+                {/* Right side - Separator and Additional Options */}
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-400 text-lg">|</span>
+
+                  <nav className="flex items-center space-x-4">
+                    <Link
+                      href="/photos"
+                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                    >
+                      Photos
+                    </Link>
+                    <Link
+                      href="/videos"
+                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                    >
+                      Videos
+                    </Link>
+                    <Link
+                      href="/audio"
+                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                    >
+                      Audio
+                    </Link>
+
+                    <button
+                      onClick={handleSearchClick}
+                      className="text-white hover:text-gray-300 p-1"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                    </button>
+
+                    <Link
+                      href="/login"
+                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                    >
+                      Login
+                    </Link>
+
+                    <span className="text-gray-400">/</span>
+
+                    <Link
+                      href="/signup"
+                      className="text-white hover:text-gray-300 font-medium transition-colors"
+                    >
+                      Sign Up
+                    </Link>
+                  </nav>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Third Row - Logo, Categories, and Options */}
-        <div className="border-t border-gray-600">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              {/* Left side - Logo and Categories */}
-              <div className="flex items-center space-x-8">
-                <Link href="/" className="flex-shrink-0">
-                  <Image
-                    src="/AGC logo.png"
-                    alt="AGC News"
-                    width={80}
-                    height={40}
-                    className="h-8 w-auto"
-                  />
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#1B1B1B] border-t border-gray-600">
+            <div className="px-4 py-4 space-y-2">
+              <button
+                onClick={() => handleCategoryClick(null)}
+                className="block w-full text-left px-4 py-3 text-white hover:bg-gray-700 rounded"
+              >
+                Home
+              </button>
+
+              {categoriesLoading
+                ? Array.from({ length: 8 }).map((_, i) => (
+                    <div
+                      key={`mobile-skeleton-${i}`}
+                      className="h-12 bg-gray-700 rounded animate-pulse mx-4"
+                    />
+                  ))
+                : categories
+                    .filter(
+                      (category) =>
+                        category &&
+                        typeof category.id === "number" &&
+                        category.name
+                    )
+                    .map((category) => (
+                      <button
+                        key={`mobile-category-${category.id}`}
+                        onClick={() => handleCategoryClick(category.id)}
+                        className="block w-full text-left px-4 py-3 text-white hover:bg-gray-700 rounded"
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+
+              <div className="pt-4 mt-4 border-t border-gray-600 space-y-2">
+                <Link
+                  href="/photos"
+                  className="block px-4 py-3 text-white hover:bg-gray-700 rounded"
+                >
+                  Photos
                 </Link>
-
-                <nav className="flex space-x-6">
-                  <Link
-                    href="/"
-                    onClick={() => handleCategoryClick(null)}
-                    className="text-white hover:text-gray-300 font-medium transition-colors"
-                  >
-                    Home
-                  </Link>
-
-                  {categoriesLoading
-                    ? Array.from({ length: 6 }).map((_, i) => (
-                        <div
-                          key={`desktop-skeleton-${i}`}
-                          className="h-6 w-20 bg-gray-600 rounded animate-pulse"
-                        />
-                      ))
-                    : categories
-                        .filter(
-                          (category) =>
-                            category &&
-                            typeof category.id === "number" &&
-                            category.name
-                        )
-                        .slice(0, 6)
-                        .map((category) => (
-                          <Link
-                            key={`desktop-category-${category.id}`}
-                            href="#"
-                            onClick={() => handleCategoryClick(category.id)}
-                            className="text-white hover:text-gray-300 font-medium transition-colors"
-                          >
-                            {category.name}
-                          </Link>
-                        ))}
-                </nav>
-              </div>
-
-              {/* Right side - Separator and Additional Options */}
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-400 text-lg">|</span>
-
-                <nav className="flex items-center space-x-4">
-                  <Link
-                    href="/photos"
-                    className="text-white hover:text-gray-300 font-medium transition-colors"
-                  >
-                    Photos
-                  </Link>
-                  <Link
-                    href="/videos"
-                    className="text-white hover:text-gray-300 font-medium transition-colors"
-                  >
-                    Videos
-                  </Link>
-                  <Link
-                    href="/audio"
-                    className="text-white hover:text-gray-300 font-medium transition-colors"
-                  >
-                    Audio
-                  </Link>
-
-                  <button className="text-white hover:text-gray-300 p-1">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </button>
-
+                <Link
+                  href="/videos"
+                  className="block px-4 py-3 text-white hover:bg-gray-700 rounded"
+                >
+                  Videos
+                </Link>
+                <Link
+                  href="/audio"
+                  className="block px-4 py-3 text-white hover:bg-gray-700 rounded"
+                >
+                  Audio
+                </Link>
+                <div className="flex space-x-2 px-4 pt-2">
                   <Link
                     href="/login"
-                    className="text-white hover:text-gray-300 font-medium transition-colors"
+                    className="flex-1 text-center px-4 py-2 text-white border border-white rounded hover:bg-white hover:text-[#1B1B1B] transition-colors"
                   >
                     Login
                   </Link>
-
-                  <span className="text-gray-400">/</span>
-
                   <Link
                     href="/signup"
-                    className="text-white hover:text-gray-300 font-medium transition-colors"
+                    className="flex-1 text-center px-4 py-2 bg-[#D32C89] text-white rounded hover:bg-opacity-90 transition-colors"
                   >
                     Sign Up
                   </Link>
-                </nav>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        )}
+      </header>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#1B1B1B] border-t border-gray-600">
-          <div className="px-4 py-4 space-y-2">
-            <button
-              onClick={() => handleCategoryClick(null)}
-              className="block w-full text-left px-4 py-3 text-white hover:bg-gray-700 rounded"
-            >
-              Home
-            </button>
-
-            {categoriesLoading
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={`mobile-skeleton-${i}`}
-                    className="h-12 bg-gray-700 rounded animate-pulse mx-4"
-                  />
-                ))
-              : categories
-                  .filter(
-                    (category) =>
-                      category &&
-                      typeof category.id === "number" &&
-                      category.name
-                  )
-                  .map((category) => (
-                    <button
-                      key={`mobile-category-${category.id}`}
-                      onClick={() => handleCategoryClick(category.id)}
-                      className="block w-full text-left px-4 py-3 text-white hover:bg-gray-700 rounded"
-                    >
-                      {category.name}
-                    </button>
-                  ))}
-
-            <div className="pt-4 mt-4 border-t border-gray-600 space-y-2">
-              <Link
-                href="/photos"
-                className="block px-4 py-3 text-white hover:bg-gray-700 rounded"
-              >
-                Photos
-              </Link>
-              <Link
-                href="/videos"
-                className="block px-4 py-3 text-white hover:bg-gray-700 rounded"
-              >
-                Videos
-              </Link>
-              <Link
-                href="/audio"
-                className="block px-4 py-3 text-white hover:bg-gray-700 rounded"
-              >
-                Audio
-              </Link>
-              <div className="flex space-x-2 px-4 pt-2">
-                <Link
-                  href="/login"
-                  className="flex-1 text-center px-4 py-2 text-white border border-white rounded hover:bg-white hover:text-[#1B1B1B] transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="flex-1 text-center px-4 py-2 bg-[#D32C89] text-white rounded hover:bg-opacity-90 transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </header>
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        allStories={[]} // Will be passed from parent component
+      />
+    </>
   );
 }
