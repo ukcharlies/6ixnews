@@ -19,15 +19,8 @@ export default function SearchModal({
 }: SearchModalProps) {
   const dispatch = useAppDispatch();
   const { searchQuery } = useAppSelector((state) => state.category);
-  const [localQuery, setLocalQuery] = useState("");
+  const [localQuery, setLocalQuery] = useState(searchQuery);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Sync local query with Redux state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setLocalQuery(searchQuery || "");
-    }
-  }, [isOpen, searchQuery]);
 
   // Helper function to safely get category name
   const getCategoryName = (category: string | object): string => {
@@ -39,24 +32,19 @@ export default function SearchModal({
     return "Uncategorized";
   };
 
-  // Filter stories based on local search query for real-time results
-  const filteredStories =
-    localQuery.trim().length >= 2
-      ? allStories
-          .filter((story) => {
-            const title = story.title?.toLowerCase() || "";
-            const excerpt = story.excerpt?.toLowerCase() || "";
-            const category = getCategoryName(story.category).toLowerCase();
-            const query = localQuery.toLowerCase();
-
-            return (
-              title.includes(query) ||
-              excerpt.includes(query) ||
-              category.includes(query)
-            );
-          })
-          .slice(0, 10) // Limit to 10 results
-      : [];
+  // Filter stories based on search query with real-time updates
+  const filteredStories = localQuery.trim()
+    ? allStories
+        .filter(
+          (story) =>
+            story.title?.toLowerCase().includes(localQuery.toLowerCase()) ||
+            story.excerpt?.toLowerCase().includes(localQuery.toLowerCase()) ||
+            getCategoryName(story.category)
+              .toLowerCase()
+              .includes(localQuery.toLowerCase())
+        )
+        .slice(0, 10) // Limit to 10 results
+    : [];
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -79,9 +67,6 @@ export default function SearchModal({
   const handleClearSearch = () => {
     setLocalQuery("");
     dispatch(clearSearch());
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
   };
 
   const handleStoryClick = () => {
@@ -89,12 +74,6 @@ export default function SearchModal({
   };
 
   if (!isOpen) return null;
-
-  // Determine what to show in results area
-  const hasQuery = localQuery.trim().length > 0;
-  const hasMinChars = localQuery.trim().length >= 2;
-  const hasResults = hasMinChars && filteredStories.length > 0;
-  const showNoResults = hasMinChars && filteredStories.length === 0;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20">
@@ -181,7 +160,57 @@ export default function SearchModal({
 
         {/* Search Results */}
         <div className="max-h-96 overflow-y-auto">
-          {!hasQuery ? (
+          {localQuery.trim() ? (
+            filteredStories.length > 0 ? (
+              <div className="divide-y divide-gray-200">
+                {filteredStories.map((story) => (
+                  <Link
+                    key={story.id}
+                    href={`/stories/${story.id}`}
+                    onClick={handleStoryClick}
+                    className="block p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex space-x-3">
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
+                          {story.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                          {story.excerpt}
+                        </p>
+                        <div className="flex items-center mt-2 space-x-2">
+                          <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                            {getCategoryName(story.category)}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {new Date(story.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center text-gray-500">
+                <svg
+                  className="w-12 h-12 mx-auto mb-4 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <p>No stories found for "{localQuery}"</p>
+                <p className="text-sm mt-1">Try adjusting your search terms</p>
+              </div>
+            )
+          ) : (
             <div className="p-8 text-center text-gray-500">
               <svg
                 className="w-12 h-12 mx-auto mb-4 text-gray-300"
@@ -198,76 +227,11 @@ export default function SearchModal({
               </svg>
               <p>Start typing to search stories</p>
             </div>
-          ) : !hasMinChars ? (
-            <div className="p-8 text-center text-gray-500">
-              <svg
-                className="w-12 h-12 mx-auto mb-4 text-gray-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <p>Type at least 2 characters to search</p>
-            </div>
-          ) : hasResults ? (
-            <div className="divide-y divide-gray-200">
-              {filteredStories.map((story) => (
-                <Link
-                  key={story.id}
-                  href={`/stories/${story.id}`}
-                  onClick={handleStoryClick}
-                  className="block p-4 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex space-x-3">
-                    <div className="flex-1">
-                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
-                        {story.title}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                        {story.excerpt}
-                      </p>
-                      <div className="flex items-center mt-2 space-x-2">
-                        <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
-                          {getCategoryName(story.category)}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          {new Date(story.date).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : showNoResults ? (
-            <div className="p-8 text-center text-gray-500">
-              <svg
-                className="w-12 h-12 mx-auto mb-4 text-gray-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <p>No stories found for "{localQuery}"</p>
-              <p className="text-sm mt-1">Try adjusting your search terms</p>
-            </div>
-          ) : null}
+          )}
         </div>
 
         {/* Footer */}
-        {hasResults && (
+        {localQuery.trim() && filteredStories.length > 0 && (
           <div className="p-4 bg-gray-50 text-center">
             <button
               onClick={handleSearchSubmit}
