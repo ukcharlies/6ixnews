@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import StoryContent from "@/components/sections/StoryContent";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { IStory } from "@/types/story";
 
 interface StoryPageProps {
@@ -62,25 +61,16 @@ function StoryLoading() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="animate-pulse space-y-6">
-        {/* Category badge skeleton */}
         <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
-
-        {/* Title skeleton */}
         <div className="space-y-2">
           <div className="h-8 bg-gray-200 rounded w-3/4"></div>
           <div className="h-8 bg-gray-200 rounded w-1/2"></div>
         </div>
-
-        {/* Meta info skeleton */}
         <div className="flex items-center space-x-4">
           <div className="h-4 w-24 bg-gray-200 rounded"></div>
           <div className="h-4 w-32 bg-gray-200 rounded"></div>
         </div>
-
-        {/* Image skeleton */}
         <div className="h-64 bg-gray-200 rounded-lg"></div>
-
-        {/* Content skeleton */}
         <div className="space-y-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-4 bg-gray-200 rounded w-full"></div>
@@ -95,7 +85,6 @@ export default async function StoryPage({ params }: StoryPageProps) {
   const { id } = await params;
   const storyId = Number(id);
 
-  // Validate ID
   if (isNaN(storyId) || storyId <= 0) {
     notFound();
   }
@@ -103,13 +92,11 @@ export default async function StoryPage({ params }: StoryPageProps) {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-
       <main className="flex-1">
         <Suspense fallback={<StoryLoading />}>
           <StoryContentWrapper storyId={storyId} />
         </Suspense>
       </main>
-
       <Footer />
     </div>
   );

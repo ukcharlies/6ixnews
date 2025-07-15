@@ -8,6 +8,7 @@ import {
   fetchFeaturedStories,
   fetchLatestStories,
   fetchMissedStories,
+  fetchCategoryStories,
 } from "@/lib/api/client";
 import { useAppSelector } from "@/lib/hooks/redux";
 import { useMemo } from "react";
@@ -19,7 +20,6 @@ import FeaturedStoriesSection from "@/components/sections/FeaturedStoriesSection
 import LatestStoriesSection from "@/components/sections/LatestStoriesSection";
 import MissedStoriesSection from "@/components/sections/MissedStoriesSection";
 import Footer from "@/components/layout/Footer";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
     (state) => state.category
   );
 
-  // Fetch all data
+  // Fetch categories
   const {
     data: categories = [],
     isLoading: categoriesLoading,
@@ -35,57 +35,65 @@ export default function Home() {
   } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
+  // Fetch stories based on selected category
   const {
     data: topStories = [],
     isLoading: topStoriesLoading,
     error: topStoriesError,
   } = useQuery({
-    queryKey: ["topStories"],
-    queryFn: fetchTopStories,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryKey: ["topStories", selectedCategoryId],
+    queryFn: () =>
+      selectedCategoryId
+        ? fetchCategoryStories(selectedCategoryId, 1, 15)
+        : fetchTopStories(),
+    staleTime: 2 * 60 * 1000,
   });
 
   const {
-    data: editorsPicksResponse,
+    data: editorsPicks = [],
     isLoading: editorsPicksLoading,
     error: editorsPicksError,
   } = useQuery({
     queryKey: ["editorsPicks"],
     queryFn: () => fetchEditorsPicks(1, 15),
     staleTime: 3 * 60 * 1000,
+    enabled: !selectedCategoryId, // Only show when not filtering by category
   });
 
   const {
-    data: featuredStoriesResponse,
+    data: featuredStories = [],
     isLoading: featuredStoriesLoading,
     error: featuredStoriesError,
   } = useQuery({
     queryKey: ["featuredStories"],
     queryFn: () => fetchFeaturedStories(1, 15),
     staleTime: 3 * 60 * 1000,
+    enabled: !selectedCategoryId,
   });
 
   const {
-    data: latestStoriesResponse,
+    data: latestStories = [],
     isLoading: latestStoriesLoading,
     error: latestStoriesError,
   } = useQuery({
     queryKey: ["latestStories"],
     queryFn: () => fetchLatestStories(1, 7),
-    staleTime: 1 * 60 * 1000, // 1 minute for latest stories
+    staleTime: 1 * 60 * 1000,
+    enabled: !selectedCategoryId,
   });
 
   const {
-    data: missedStoriesResponse,
+    data: missedStories = [],
     isLoading: missedStoriesLoading,
     error: missedStoriesError,
   } = useQuery({
     queryKey: ["missedStories"],
     queryFn: () => fetchMissedStories(1, 5),
     staleTime: 3 * 60 * 1000,
+    enabled: !selectedCategoryId,
   });
 
   // Filter stories based on search query
@@ -99,14 +107,13 @@ export default function Home() {
   }, [topStories, searchQuery]);
 
   const filteredEditorsPicks = useMemo(() => {
-    const stories = editorsPicksResponse?.data || [];
-    if (!searchQuery) return stories;
-    return stories.filter(
+    if (!searchQuery) return editorsPicks;
+    return editorsPicks.filter(
       (story) =>
         story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [editorsPicksResponse, searchQuery]);
+  }, [editorsPicks, searchQuery]);
 
   // Check for critical errors
   const hasError = categoriesError || topStoriesError;
@@ -126,19 +133,16 @@ export default function Home() {
     );
   }
 
-  // Ensure categories is always an array
-  const safeCategories = Array.isArray(categories) ? categories : [];
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
 
       <main className="flex-1">
         {/* Category Navigation */}
-        <section className="bg-white shadow-sm sticky top-0 z-40">
+        <section className="bg-white shadow-sm sticky top-16 z-40">
           <div className="container mx-auto px-4">
             <CategoryNav
-              categories={safeCategories}
+              categories={categories}
               isLoading={categoriesLoading}
             />
           </div>
@@ -154,40 +158,54 @@ export default function Home() {
             </div>
           )}
 
-          {/* Top Stories Section */}
+          {/* Category Filter Info */}
+          {selectedCategoryId && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-green-800">
+                Showing stories from:{" "}
+                <strong>
+                  {categories.find((c) => c.id === selectedCategoryId)?.name}
+                </strong>
+              </p>
+            </div>
+          )}
+
+          {/* Top Stories / Category Stories Section */}
           <TopStoriesSection
-            stories={filteredTopStories || []}
+            stories={filteredTopStories}
             isLoading={topStoriesLoading}
             error={topStoriesError}
+            title={selectedCategoryId ? "Category Stories" : "Top Stories"}
           />
 
-          {/* Editor's Picks Section */}
-          <EditorsPicksSection
-            stories={filteredEditorsPicks}
-            isLoading={editorsPicksLoading}
-            error={editorsPicksError}
-          />
+          {/* Only show other sections when not filtering by category */}
+          {!selectedCategoryId && (
+            <>
+              <EditorsPicksSection
+                stories={filteredEditorsPicks}
+                isLoading={editorsPicksLoading}
+                error={editorsPicksError}
+              />
 
-          {/* Featured Stories Section */}
-          <FeaturedStoriesSection
-            stories={featuredStoriesResponse?.data || []}
-            isLoading={featuredStoriesLoading}
-            error={featuredStoriesError}
-          />
+              <FeaturedStoriesSection
+                stories={featuredStories}
+                isLoading={featuredStoriesLoading}
+                error={featuredStoriesError}
+              />
 
-          {/* Latest Stories Section */}
-          <LatestStoriesSection
-            stories={latestStoriesResponse?.data || []}
-            isLoading={latestStoriesLoading}
-            error={latestStoriesError}
-          />
+              <LatestStoriesSection
+                stories={latestStories}
+                isLoading={latestStoriesLoading}
+                error={latestStoriesError}
+              />
 
-          {/* Missed Stories Section */}
-          <MissedStoriesSection
-            stories={missedStoriesResponse?.data || []}
-            isLoading={missedStoriesLoading}
-            error={missedStoriesError}
-          />
+              <MissedStoriesSection
+                stories={missedStories}
+                isLoading={missedStoriesLoading}
+                error={missedStoriesError}
+              />
+            </>
+          )}
         </div>
       </main>
 
