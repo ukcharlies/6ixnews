@@ -1,103 +1,194 @@
-import Image from "next/image";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import {
+  fetchTopStories,
+  fetchCategories,
+  fetchEditorsPicks,
+  fetchFeaturedStories,
+  fetchLatestStories,
+  fetchMissedStories,
+} from "@/lib/api/client";
+import { useAppSelector } from "@/lib/hooks/redux";
+import { useMemo } from "react";
+import Header from "@/components/layout/Header";
+import CategoryNav from "@/components/sections/CategoryNav";
+import TopStoriesSection from "@/components/sections/TopStoriesSection";
+import EditorsPicksSection from "@/components/sections/EditorsPicksSection";
+import FeaturedStoriesSection from "@/components/sections/FeaturedStoriesSection";
+import LatestStoriesSection from "@/components/sections/LatestStoriesSection";
+import MissedStoriesSection from "@/components/sections/MissedStoriesSection";
+import Footer from "@/components/layout/Footer";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ErrorMessage from "@/components/ui/ErrorMessage";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { selectedCategoryId, searchQuery } = useAppSelector(
+    (state) => state.category
+  );
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  // Fetch all data
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const {
+    data: topStories = [],
+    isLoading: topStoriesLoading,
+    error: topStoriesError,
+  } = useQuery({
+    queryKey: ["topStories"],
+    queryFn: fetchTopStories,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+
+  const {
+    data: editorsPicksResponse,
+    isLoading: editorsPicksLoading,
+    error: editorsPicksError,
+  } = useQuery({
+    queryKey: ["editorsPicks"],
+    queryFn: () => fetchEditorsPicks(1, 15),
+    staleTime: 3 * 60 * 1000,
+  });
+
+  const {
+    data: featuredStoriesResponse,
+    isLoading: featuredStoriesLoading,
+    error: featuredStoriesError,
+  } = useQuery({
+    queryKey: ["featuredStories"],
+    queryFn: () => fetchFeaturedStories(1, 15),
+    staleTime: 3 * 60 * 1000,
+  });
+
+  const {
+    data: latestStoriesResponse,
+    isLoading: latestStoriesLoading,
+    error: latestStoriesError,
+  } = useQuery({
+    queryKey: ["latestStories"],
+    queryFn: () => fetchLatestStories(1, 7),
+    staleTime: 1 * 60 * 1000, // 1 minute for latest stories
+  });
+
+  const {
+    data: missedStoriesResponse,
+    isLoading: missedStoriesLoading,
+    error: missedStoriesError,
+  } = useQuery({
+    queryKey: ["missedStories"],
+    queryFn: () => fetchMissedStories(1, 5),
+    staleTime: 3 * 60 * 1000,
+  });
+
+  // Filter stories based on search query
+  const filteredTopStories = useMemo(() => {
+    if (!searchQuery) return topStories;
+    return topStories.filter(
+      (story) =>
+        story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [topStories, searchQuery]);
+
+  const filteredEditorsPicks = useMemo(() => {
+    const stories = editorsPicksResponse?.data || [];
+    if (!searchQuery) return stories;
+    return stories.filter(
+      (story) =>
+        story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        story.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [editorsPicksResponse, searchQuery]);
+
+  // Check for critical errors
+  const hasError = categoriesError || topStoriesError;
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 container mx-auto px-4 py-8">
+          <ErrorMessage
+            message="Failed to load content. Please try again later."
+            onRetry={() => window.location.reload()}
+          />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
+
+      <main className="flex-1">
+        {/* Category Navigation */}
+        <section className="bg-white shadow-sm sticky top-0 z-40">
+          <div className="container mx-auto px-4">
+            <CategoryNav
+              categories={categories}
+              isLoading={categoriesLoading}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+        </section>
+
+        <div className="container mx-auto px-4 py-6 space-y-12">
+          {/* Search Results Info */}
+          {searchQuery && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-blue-800">
+                Search results for: <strong>"{searchQuery}"</strong>
+              </p>
+            </div>
+          )}
+
+          {/* Top Stories Section */}
+          <TopStoriesSection
+            stories={filteredTopStories}
+            isLoading={topStoriesLoading}
+            error={topStoriesError}
+          />
+
+          {/* Editor's Picks Section */}
+          <EditorsPicksSection
+            stories={filteredEditorsPicks}
+            isLoading={editorsPicksLoading}
+            error={editorsPicksError}
+          />
+
+          {/* Featured Stories Section */}
+          <FeaturedStoriesSection
+            stories={featuredStoriesResponse?.data || []}
+            isLoading={featuredStoriesLoading}
+            error={featuredStoriesError}
+          />
+
+          {/* Latest Stories Section */}
+          <LatestStoriesSection
+            stories={latestStoriesResponse?.data || []}
+            isLoading={latestStoriesLoading}
+            error={latestStoriesError}
+          />
+
+          {/* Missed Stories Section */}
+          <MissedStoriesSection
+            stories={missedStoriesResponse?.data || []}
+            isLoading={missedStoriesLoading}
+            error={missedStoriesError}
+          />
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      <Footer />
     </div>
   );
 }
