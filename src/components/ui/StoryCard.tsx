@@ -54,9 +54,9 @@ export default function StoryCard({
       >
         <Link href={`/stories/${story.id}`}>
           <div className="flex space-x-4 p-4">
-            {story.imageUrl && (
+            {story.banner_image && (
               <Image
-                src={story.imageUrl}
+                src={story.banner_image}
                 alt={story.title}
                 width={96}
                 height={64}
@@ -79,7 +79,7 @@ export default function StoryCard({
                   </h3>
                   <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>{story.author}</span>
-                    <span>{formatDate(story.date)}</span>
+                    <span>{formatDate(story.created_at)}</span>
                   </div>
                 </div>
 
@@ -121,9 +121,9 @@ export default function StoryCard({
       >
         <Link href={`/stories/${story.id}`}>
           <div className="relative">
-            {story.imageUrl && (
+            {story.banner_image && (
               <Image
-                src={story.imageUrl}
+                src={story.banner_image}
                 alt={story.title}
                 width={300}
                 height={150}
@@ -175,7 +175,7 @@ export default function StoryCard({
 
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span className="font-medium">{story.author}</span>
-              <span>{formatDate(story.date)}</span>
+              <span>{formatDate(story.created_at)}</span>
             </div>
           </div>
         </Link>
@@ -190,9 +190,9 @@ export default function StoryCard({
     >
       <Link href={`/stories/${story.id}`}>
         <div className="relative">
-          {story.imageUrl && (
+          {story.banner_image && (
             <Image
-              src={story.imageUrl}
+              src={story.banner_image}
               alt={story.title}
               width={400}
               height={240}
@@ -241,12 +241,12 @@ export default function StoryCard({
           </h3>
 
           <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-            {story.excerpt}
+            {story.description}
           </p>
 
           <div className="flex items-center justify-between text-xs text-gray-500">
             <span className="font-medium">{story.author}</span>
-            <span>{formatDate(story.date)}</span>
+            <span>{formatDate(story.created_at)}</span>
           </div>
         </div>
       </Link>

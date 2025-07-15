@@ -38,7 +38,9 @@ export default function SearchModal({
         .filter(
           (story) =>
             story.title?.toLowerCase().includes(localQuery.toLowerCase()) ||
-            story.excerpt?.toLowerCase().includes(localQuery.toLowerCase()) ||
+            story.description
+              ?.toLowerCase()
+              .includes(localQuery.toLowerCase()) ||
             getCategoryName(story.category)
               .toLowerCase()
               .includes(localQuery.toLowerCase())
@@ -176,14 +178,14 @@ export default function SearchModal({
                           {story.title}
                         </h3>
                         <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                          {story.excerpt}
+                          {story.description}
                         </p>
                         <div className="flex items-center mt-2 space-x-2">
                           <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
                             {getCategoryName(story.category)}
                           </span>
                           <span className="text-xs text-gray-400">
-                            {new Date(story.date).toLocaleDateString()}
+                            {new Date(story.created_at).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
