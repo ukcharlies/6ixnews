@@ -1,5 +1,4 @@
 import { IStory, ICategory } from "@/types/story";
-import { IApiResponse } from "@/types/api";
 
 const API_BASE = "https://api.agcnewsnet.com/api/general";
 
@@ -22,14 +21,50 @@ async function apiCall<T>(endpoint: string): Promise<T> {
 // Category endpoints
 export const fetchCategories = async (): Promise<ICategory[]> => {
   const response = await apiCall<any>("/categories");
-  // Handle different response formats
-  return Array.isArray(response) ? response : response.data || [];
+  // Handle the nested data structure: response.data.data
+  if (
+    response &&
+    response.data &&
+    response.data.data &&
+    Array.isArray(response.data.data)
+  ) {
+    return response.data.data;
+  }
+  // Fallback for direct data property
+  if (response && response.data && Array.isArray(response.data)) {
+    return response.data;
+  }
+  // If it's already an array
+  if (Array.isArray(response)) {
+    return response;
+  }
+  console.warn("Unexpected categories response format:", response);
+  return [];
 };
 
 // Story endpoints
 export const fetchTopStories = async (): Promise<IStory[]> => {
   const response = await apiCall<any>("/top-stories");
-  return Array.isArray(response) ? response : response.data || [];
+  // Handle the nested data structure and extract story objects
+  if (
+    response &&
+    response.data &&
+    response.data.data &&
+    Array.isArray(response.data.data)
+  ) {
+    return response.data.data
+      .map((item: any) => item.story)
+      .filter((story: any) => story !== null);
+  }
+  // Fallback handlers
+  if (response && response.data && Array.isArray(response.data)) {
+    return response.data;
+  }
+  if (Array.isArray(response)) {
+    return response;
+  }
+  console.warn("Unexpected top stories response format:", response);
+  return [];
 };
 
 export const fetchEditorsPicks = async (
@@ -39,7 +74,26 @@ export const fetchEditorsPicks = async (
   const response = await apiCall<any>(
     `/editor-picks?page=${page}&per_page=${perPage}`
   );
-  return Array.isArray(response) ? response : response.data || [];
+  // Handle the nested data structure and extract story objects, filter out null stories
+  if (
+    response &&
+    response.data &&
+    response.data.data &&
+    Array.isArray(response.data.data)
+  ) {
+    return response.data.data
+      .map((item: any) => item.story)
+      .filter((story: any) => story !== null);
+  }
+  // Fallback handlers
+  if (response && response.data && Array.isArray(response.data)) {
+    return response.data;
+  }
+  if (Array.isArray(response)) {
+    return response;
+  }
+  console.warn("Unexpected editors picks response format:", response);
+  return [];
 };
 
 export const fetchFeaturedStories = async (
@@ -49,7 +103,24 @@ export const fetchFeaturedStories = async (
   const response = await apiCall<any>(
     `/stories/featured-stories?page=${page}&per_page=${perPage}`
   );
-  return Array.isArray(response) ? response : response.data || [];
+  // Handle the nested data structure
+  if (
+    response &&
+    response.data &&
+    response.data.data &&
+    Array.isArray(response.data.data)
+  ) {
+    return response.data.data;
+  }
+  // Fallback handlers
+  if (response && response.data && Array.isArray(response.data)) {
+    return response.data;
+  }
+  if (Array.isArray(response)) {
+    return response;
+  }
+  console.warn("Unexpected featured stories response format:", response);
+  return [];
 };
 
 export const fetchLatestStories = async (
@@ -59,7 +130,24 @@ export const fetchLatestStories = async (
   const response = await apiCall<any>(
     `/stories/latest-stories?page=${page}&per_page=${perPage}`
   );
-  return Array.isArray(response) ? response : response.data || [];
+  // Handle the nested data structure
+  if (
+    response &&
+    response.data &&
+    response.data.data &&
+    Array.isArray(response.data.data)
+  ) {
+    return response.data.data;
+  }
+  // Fallback handlers
+  if (response && response.data && Array.isArray(response.data)) {
+    return response.data;
+  }
+  if (Array.isArray(response)) {
+    return response;
+  }
+  console.warn("Unexpected latest stories response format:", response);
+  return [];
 };
 
 export const fetchMissedStories = async (
@@ -69,7 +157,24 @@ export const fetchMissedStories = async (
   const response = await apiCall<any>(
     `/stories/missed-stories?page=${page}&per_page=${perPage}`
   );
-  return Array.isArray(response) ? response : response.data || [];
+  // Handle the nested data structure
+  if (
+    response &&
+    response.data &&
+    response.data.data &&
+    Array.isArray(response.data.data)
+  ) {
+    return response.data.data;
+  }
+  // Fallback handlers
+  if (response && response.data && Array.isArray(response.data)) {
+    return response.data;
+  }
+  if (Array.isArray(response)) {
+    return response;
+  }
+  console.warn("Unexpected missed stories response format:", response);
+  return [];
 };
 
 export const fetchCategoryStories = async (
@@ -80,10 +185,33 @@ export const fetchCategoryStories = async (
   const response = await apiCall<any>(
     `/categories/${categoryId}/stories?page=${page}&per_page=${perPage}`
   );
-  return Array.isArray(response) ? response : response.data || [];
+  // Handle the nested data structure
+  if (
+    response &&
+    response.data &&
+    response.data.data &&
+    Array.isArray(response.data.data)
+  ) {
+    return response.data.data;
+  }
+  // Fallback handlers
+  if (response && response.data && Array.isArray(response.data)) {
+    return response.data;
+  }
+  if (Array.isArray(response)) {
+    return response;
+  }
+  console.warn("Unexpected category stories response format:", response);
+  return [];
 };
 
 export const fetchSingleStory = async (storyId: number): Promise<IStory> => {
   const response = await apiCall<any>(`/stories/${storyId}`);
-  return response.data || response;
+  if (response && response.data) {
+    return response.data;
+  }
+  if (response && response.story) {
+    return response.story;
+  }
+  return response;
 };

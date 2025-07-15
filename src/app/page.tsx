@@ -22,7 +22,7 @@ import MissedStoriesSection from "@/components/sections/MissedStoriesSection";
 import Footer from "@/components/layout/Footer";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
-function Home() {
+export default function Home() {
   const { selectedCategoryId, searchQuery } = useAppSelector(
     (state) => state.category
   );
@@ -34,7 +34,12 @@ function Home() {
     error: categoriesError,
   } = useQuery({
     queryKey: ["categories"],
-    queryFn: fetchCategories,
+    queryFn: async () => {
+      console.log("Fetching categories...");
+      const result = await fetchCategories();
+      console.log("Categories result:", result);
+      return result;
+    },
     staleTime: 5 * 60 * 1000,
   });
 
@@ -45,10 +50,14 @@ function Home() {
     error: topStoriesError,
   } = useQuery({
     queryKey: ["topStories", selectedCategoryId],
-    queryFn: () =>
-      selectedCategoryId
-        ? fetchCategoryStories(selectedCategoryId, 1, 15)
-        : fetchTopStories(),
+    queryFn: async () => {
+      console.log("Fetching top stories for category:", selectedCategoryId);
+      const result = selectedCategoryId
+        ? await fetchCategoryStories(selectedCategoryId, 1, 15)
+        : await fetchTopStories();
+      console.log("Top stories result:", result);
+      return result;
+    },
     staleTime: 2 * 60 * 1000,
   });
 
@@ -58,9 +67,14 @@ function Home() {
     error: editorsPicksError,
   } = useQuery({
     queryKey: ["editorsPicks"],
-    queryFn: () => fetchEditorsPicks(1, 15),
+    queryFn: async () => {
+      console.log("Fetching editors picks...");
+      const result = await fetchEditorsPicks(1, 15);
+      console.log("Editors picks result:", result);
+      return result;
+    },
     staleTime: 3 * 60 * 1000,
-    enabled: !selectedCategoryId, // Only show when not filtering by category
+    enabled: !selectedCategoryId,
   });
 
   const {
@@ -69,7 +83,12 @@ function Home() {
     error: featuredStoriesError,
   } = useQuery({
     queryKey: ["featuredStories"],
-    queryFn: () => fetchFeaturedStories(1, 15),
+    queryFn: async () => {
+      console.log("Fetching featured stories...");
+      const result = await fetchFeaturedStories(1, 15);
+      console.log("Featured stories result:", result);
+      return result;
+    },
     staleTime: 3 * 60 * 1000,
     enabled: !selectedCategoryId,
   });
@@ -80,7 +99,12 @@ function Home() {
     error: latestStoriesError,
   } = useQuery({
     queryKey: ["latestStories"],
-    queryFn: () => fetchLatestStories(1, 7),
+    queryFn: async () => {
+      console.log("Fetching latest stories...");
+      const result = await fetchLatestStories(1, 7);
+      console.log("Latest stories result:", result);
+      return result;
+    },
     staleTime: 1 * 60 * 1000,
     enabled: !selectedCategoryId,
   });
@@ -91,7 +115,12 @@ function Home() {
     error: missedStoriesError,
   } = useQuery({
     queryKey: ["missedStories"],
-    queryFn: () => fetchMissedStories(1, 5),
+    queryFn: async () => {
+      console.log("Fetching missed stories...");
+      const result = await fetchMissedStories(1, 5);
+      console.log("Missed stories result:", result);
+      return result;
+    },
     staleTime: 3 * 60 * 1000,
     enabled: !selectedCategoryId,
   });
@@ -115,10 +144,23 @@ function Home() {
     );
   }, [editorsPicks, searchQuery]);
 
+  // Debug: Log all data
+  console.log("All data:", {
+    categories,
+    topStories,
+    editorsPicks,
+    featuredStories,
+    latestStories,
+    missedStories,
+    selectedCategoryId,
+    searchQuery,
+  });
+
   // Check for critical errors
   const hasError = categoriesError || topStoriesError;
 
   if (hasError) {
+    console.error("Critical errors:", { categoriesError, topStoriesError });
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -170,6 +212,19 @@ function Home() {
             </div>
           )}
 
+          {/* Debug Info */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
+            <p>
+              <strong>Debug Info:</strong>
+            </p>
+            <p>Categories: {categories.length}</p>
+            <p>Top Stories: {topStories.length}</p>
+            <p>Editor's Picks: {editorsPicks.length}</p>
+            <p>Featured Stories: {featuredStories.length}</p>
+            <p>Latest Stories: {latestStories.length}</p>
+            <p>Missed Stories: {missedStories.length}</p>
+          </div>
+
           {/* Top Stories / Category Stories Section */}
           <TopStoriesSection
             stories={filteredTopStories}
@@ -213,5 +268,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;
