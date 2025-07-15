@@ -325,6 +325,47 @@ export default function Home() {
             />
           )}
 
+          {/* Advertisement Section */}
+          {!selectedCategoryId && (
+            <section className="py-8">
+              {/* Mobile Layout - Stacked */}
+              <div className="lg:hidden space-y-6">
+                <div className="w-full">
+                  <img
+                    src="/body add.png"
+                    alt="Advertisement"
+                    className="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div className="w-full">
+                  <img
+                    src="/body-add2.png"
+                    alt="Advertisement"
+                    className="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Large Screen Layout - Horizontal */}
+              <div className="hidden lg:flex lg:space-x-8 lg:justify-between">
+                <div className="flex-1">
+                  <img
+                    src="/body add.png"
+                    alt="Advertisement"
+                    className="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div className="flex-1">
+                  <img
+                    src="/body-add2.png"
+                    alt="Advertisement"
+                    className="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Only show other sections when not filtering by category */}
           {!selectedCategoryId && (
             <>
