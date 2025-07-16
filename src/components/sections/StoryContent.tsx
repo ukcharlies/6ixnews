@@ -28,12 +28,21 @@ export default function StoryContent({ story }: StoryContentProps) {
     });
   };
 
+  const getCategoryName = (category: any): string => {
+    if (!category) return "Uncategorized";
+    if (typeof category === "string") return category;
+    if (typeof category === "object" && category.category_name) {
+      return category.category_name;
+    }
+    return "Uncategorized";
+  };
+
   return (
     <article className="max-w-4xl mx-auto px-4 py-12">
       {/* Category Badge */}
       <div className="mb-4">
         <span className="px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-full">
-          {story.category}
+          {getCategoryName(story.category)}
         </span>
       </div>
 
@@ -47,7 +56,7 @@ export default function StoryContent({ story }: StoryContentProps) {
         <div className="flex items-center space-x-4 text-gray-600">
           <span className="font-medium">{story.author}</span>
           <span>•</span>
-          <span>{formatDate(story.date)}</span>
+          <span>{formatDate(story.created_at)}</span>
         </div>
 
         <button
@@ -76,10 +85,10 @@ export default function StoryContent({ story }: StoryContentProps) {
       </div>
 
       {/* Featured Image */}
-      {story.imageUrl && (
+      {story.banner_image && (
         <div className="mb-8">
           <Image
-            src={story.imageUrl}
+            src={story.banner_image}
             alt={story.title}
             width={800}
             height={400}
@@ -95,7 +104,7 @@ export default function StoryContent({ story }: StoryContentProps) {
 
       {/* Excerpt */}
       <div className="text-xl text-gray-700 font-medium mb-8 leading-relaxed">
-        {story.excerpt}
+        {story.description}
       </div>
 
       {/* Content */}

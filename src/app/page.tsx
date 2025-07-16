@@ -148,11 +148,11 @@ export default function Home() {
   }, [topStories, editorsPicks, featuredStories, latestStories, missedStories]);
 
   // Helper function to safely get category name
-  const getCategoryName = (category: string | Story["category"]): string => {
+  const getCategoryName = (category: any): string => {
     if (!category) return "";
     if (typeof category === "string") return category;
-    if (typeof category === "object" && "category_name" in category) {
-      return (category as any).category_name;
+    if (typeof category === "object") {
+      return category.category_name || "";
     }
     return "";
   };

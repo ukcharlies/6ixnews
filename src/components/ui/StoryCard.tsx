@@ -35,12 +35,12 @@ export default function StoryCard({
     });
   };
 
-  // Helper function to safely get category name
-  const getCategoryName = (category: string | object): string => {
+  // Update the getCategoryName function to be more robust
+  const getCategoryName = (category: any): string => {
     if (!category) return "Uncategorized";
     if (typeof category === "string") return category;
-    if (typeof category === "object" && "category_name" in category) {
-      return (category as any).category_name;
+    if (typeof category === "object") {
+      return category.category_name || "Uncategorized";
     }
     return "Uncategorized";
   };
