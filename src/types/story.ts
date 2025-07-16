@@ -1,10 +1,12 @@
+export type StoryType = "article" | "video" | "gallery" | "audio";
+
 export interface IStory {
   id: number;
   title: string;
   subtitle: string;
   description: string;
   status: string;
-  type: string;
+  type: StoryType;
   author: string;
   content: string;
   featured: string;
