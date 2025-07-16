@@ -24,6 +24,8 @@ import Footer from "@/components/layout/Footer";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import SearchModal from "@/components/SearchModal";
 import { Story } from "@/types/story";
+import NewsInVideosSection from "@/components/sections/NewsInVideosSection";
+import NewsInPicturesSection from "@/components/sections/NewsInPicturesSection";
 
 export default function Home() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
@@ -382,6 +384,14 @@ export default function Home() {
                 isLoading={editorsPicksLoading}
                 error={editorsPicksError}
               />
+
+              <div className="border-t border-gray-200 my-8"></div>
+
+              <NewsInVideosSection stories={allStories} />
+
+              <div className="border-t border-gray-200 my-8"></div>
+
+              <NewsInPicturesSection stories={allStories} />
 
               <FeaturedStoriesSection
                 stories={filteredFeaturedStories}
