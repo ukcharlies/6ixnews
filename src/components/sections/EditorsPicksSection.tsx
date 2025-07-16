@@ -1,22 +1,59 @@
-import { IStory } from "@/types/story";
-import { Crown } from "lucide-react";
+import { IStory, ICategory } from "@/types/story";
+import { Crown, ChevronRight, Clock } from "lucide-react";
 import { useState } from "react";
-import ErrorMessage from "@/components/ui/ErrorMessage"; // Add this import
+import ErrorMessage from "@/components/ui/ErrorMessage";
 
 interface EditorsPicksSectionProps {
-  stories: IStory[]; // Ensure this matches the story structure from the API
+  stories: IStory[];
+  categories: ICategory[];
   isLoading?: boolean;
   error?: Error | null;
 }
 
 export default function EditorsPicksSection({
   stories,
+  categories,
   isLoading,
   error,
 }: EditorsPicksSectionProps) {
   const [currentPage, setCurrentPage] = useState(0);
+  const [categoryPages, setCategoryPages] = useState<Record<number, number>>(
+    {}
+  );
   const storiesPerPage = 5;
   const safeStories = Array.isArray(stories) ? stories : [];
+  const safeCategories = Array.isArray(categories) ? categories : [];
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Group stories by category
+  const storiesByCategory = safeCategories.reduce((acc, category) => {
+    acc[category.id] = safeStories.filter(
+      (story) => story.category?.category_id === category.id
+    );
+    return acc;
+  }, {} as Record<number, IStory[]>);
+
+  const handleCategoryPage = (
+    categoryId: number,
+    direction: "next" | "prev"
+  ) => {
+    setCategoryPages((prev) => {
+      const currentPageNum = prev[categoryId] || 0;
+      return {
+        ...prev,
+        [categoryId]:
+          direction === "next" ? currentPageNum + 1 : currentPageNum - 1,
+      };
+    });
+  };
 
   if (error) {
     return (
@@ -55,11 +92,12 @@ export default function EditorsPicksSection({
 
   return (
     <section className="py-8">
+      {/* Main Editor's Picks */}
       <div className="flex flex-col lg:flex-row lg:space-x-8 lg:min-h-[650px]">
         {/* Featured Story */}
         {safeStories[0] && (
-          <div className="flex-1 lg:flex-grow-2 lg:h-full">
-            <div className="bg-white shadow-sm overflow-hidden rounded-t-none lg:rounded-lg lg:h-full flex flex-col">
+          <div className="flex-1 lg:flex-grow-2 lg:h-full mb-0">
+            <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg lg:h-full flex flex-col">
               <div className="relative h-[280px] lg:h-[400px]">
                 <img
                   src={safeStories[0].banner_image || "/placeholder-image.jpg"}
@@ -87,19 +125,27 @@ export default function EditorsPicksSection({
                 </div>
                 <div className="flex items-center pt-4 border-t border-gray-100">
                   <div className="w-2.5 h-2.5 bg-[#F52A32] rounded-full mr-3"></div>
-                  <span className="text-base font-medium text-gray-700">
-                    By {safeStories[0].author || "Unknown Author"}
-                  </span>
+                  <div className="flex items-center divide-x divide-gray-300">
+                    <span className="text-base font-medium text-gray-700 pr-3">
+                      By {safeStories[0].author || "Unknown Author"}
+                    </span>
+                    <div className="flex items-center pl-3 text-gray-500">
+                      <Clock className="w-4 h-4 mr-1" />
+                      <span className="text-sm">
+                        {formatDate(safeStories[0].created_at)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* More Stories - keeping original styling */}
+        {/* More Stories */}
         {paginatedStories[currentPage]?.length > 0 && (
           <div className="lg:mt-0 lg:w-1/3 lg:h-full">
-            <div className="bg-white shadow-sm p-6 rounded-b-none lg:rounded-lg lg:h-full lg:flex lg:flex-col">
+            <div className="bg-white shadow-sm p-6 rounded-b-lg lg:rounded-lg lg:h-full lg:flex lg:flex-col -mt-[1px]">
               <h2 className="hidden lg:block text-2xl font-bold text-gray-900 mb-6">
                 More Stories
               </h2>
@@ -151,6 +197,140 @@ export default function EditorsPicksSection({
           </div>
         )}
       </div>
+
+      {/* Horizontal Separator */}
+      <div className="border-t border-gray-200 my-8"></div>
+
+      {/* Category News Section */}
+      {safeCategories.map((category) => {
+        const categoryStories = storiesByCategory[category.id] || [];
+        if (categoryStories.length === 0) return null;
+
+        const currentCategoryPage = categoryPages[category.id] || 0;
+        const paginatedCategoryStories = categoryStories.reduce(
+          (acc: IStory[][], story, i) => {
+            const pageIndex = Math.floor(i / storiesPerPage);
+            if (!acc[pageIndex]) acc[pageIndex] = [];
+            acc[pageIndex].push(story);
+            return acc;
+          },
+          []
+        );
+
+        const currentPageStories =
+          paginatedCategoryStories[currentCategoryPage] || [];
+        const [firstStory, ...restStories] = currentPageStories;
+
+        return (
+          <div key={category.id} className="py-8">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-1 h-8 bg-[#813D97]" />
+              <h2 className="text-2xl font-bold">{category.name}</h2>
+              <ChevronRight className="w-6 h-6 text-[#282828]" />
+            </div>
+
+            <div className="flex flex-col lg:flex-row lg:space-x-8 lg:min-h-[650px]">
+              {/* Featured Category Story */}
+              {firstStory && (
+                <div className="flex-1 lg:flex-grow-2 mb-0 lg:mb-0">
+                  <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg h-full flex flex-col">
+                    <div className="relative h-[280px] lg:h-[400px]">
+                      <img
+                        src={
+                          firstStory.banner_image || "/placeholder-image.jpg"
+                        }
+                        alt={firstStory.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-8 flex-1 flex flex-col">
+                      <div className="mb-auto">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+                          {firstStory.title}
+                        </h3>
+                        <p className="text-base text-gray-600 mb-1 leading-relaxed line-clamp-3">
+                          {firstStory.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center pt-4 border-t border-gray-100">
+                        <div className="w-2.5 h-2.5 bg-[#F52A32] rounded-full mr-3"></div>
+                        <div className="flex items-center divide-x divide-gray-300">
+                          <span className="text-base font-medium text-gray-700 pr-3">
+                            By {firstStory.author || "Unknown Author"}
+                          </span>
+                          <div className="flex items-center pl-3 text-gray-500">
+                            <Clock className="w-4 h-4 mr-1" />
+                            <span className="text-sm">
+                              {formatDate(firstStory.created_at)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Category Stories List */}
+              {restStories.length > 0 && (
+                <div className="lg:w-1/3">
+                  <div className="bg-white shadow-sm p-6 rounded-b-lg lg:rounded-lg h-full flex flex-col -mt-[1px]">
+                    <div className="space-y-4 flex-1 overflow-y-auto">
+                      {restStories.map((story) => (
+                        <div
+                          key={story.id}
+                          className="flex items-start space-x-3 group cursor-pointer"
+                        >
+                          <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
+                          <div className="flex-1">
+                            <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 line-clamp-2">
+                              {story.title}
+                            </h3>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {story.author || "Unknown Author"}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Category Pagination */}
+                    {paginatedCategoryStories.length > 1 && (
+                      <div className="flex justify-between items-center mt-6 text-sm text-gray-500 border-t pt-4">
+                        <button
+                          onClick={() =>
+                            handleCategoryPage(category.id, "prev")
+                          }
+                          className="disabled:opacity-50"
+                          disabled={currentCategoryPage === 0}
+                        >
+                          Previous
+                        </button>
+                        <span>
+                          Page {currentCategoryPage + 1} of{" "}
+                          {paginatedCategoryStories.length}
+                        </span>
+                        <button
+                          onClick={() =>
+                            handleCategoryPage(category.id, "next")
+                          }
+                          className="disabled:opacity-50"
+                          disabled={
+                            currentCategoryPage ===
+                            paginatedCategoryStories.length - 1
+                          }
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </section>
   );
 }

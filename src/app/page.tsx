@@ -378,6 +378,7 @@ export default function Home() {
             <>
               <EditorsPicksSection
                 stories={filteredEditorsPicks}
+                categories={categories}
                 isLoading={editorsPicksLoading}
                 error={editorsPicksError}
               />
