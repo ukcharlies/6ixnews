@@ -23,6 +23,7 @@ import MissedStoriesSection from "@/components/sections/MissedStoriesSection";
 import Footer from "@/components/layout/Footer";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import SearchModal from "@/components/SearchModal";
+import { Story } from "@/types/story";
 
 export default function Home() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
@@ -145,7 +146,7 @@ export default function Home() {
   }, [topStories, editorsPicks, featuredStories, latestStories, missedStories]);
 
   // Helper function to safely get category name
-  const getCategoryName = (category: string | object): string => {
+  const getCategoryName = (category: string | Story["category"]): string => {
     if (!category) return "";
     if (typeof category === "string") return category;
     if (typeof category === "object" && "category_name" in category) {
@@ -158,7 +159,7 @@ export default function Home() {
   const filteredTopStories = useMemo(() => {
     if (!searchQuery) return topStories;
     return topStories.filter(
-      (story) =>
+      (story: Story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
@@ -170,7 +171,7 @@ export default function Home() {
   const filteredEditorsPicks = useMemo(() => {
     if (!searchQuery) return editorsPicks;
     return editorsPicks.filter(
-      (story) =>
+      (story: Story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
@@ -182,7 +183,7 @@ export default function Home() {
   const filteredFeaturedStories = useMemo(() => {
     if (!searchQuery) return featuredStories;
     return featuredStories.filter(
-      (story) =>
+      (story: Story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
@@ -194,7 +195,7 @@ export default function Home() {
   const filteredLatestStories = useMemo(() => {
     if (!searchQuery) return latestStories;
     return latestStories.filter(
-      (story) =>
+      (story: Story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)
@@ -206,7 +207,7 @@ export default function Home() {
   const filteredMissedStories = useMemo(() => {
     if (!searchQuery) return missedStories;
     return missedStories.filter(
-      (story) =>
+      (story: Story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         getCategoryName(story.category)

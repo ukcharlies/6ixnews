@@ -27,3 +27,5 @@ export interface ICategory {
   id: number;
   name: string;
 }
+
+export type Story = IStory;
