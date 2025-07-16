@@ -26,6 +26,7 @@ import SearchModal from "@/components/SearchModal";
 import { Story } from "@/types/story";
 import NewsInVideosSection from "@/components/sections/NewsInVideosSection";
 import NewsInPicturesSection from "@/components/sections/NewsInPicturesSection";
+import GetUpdatesSection from "@/components/sections/GetUpdatesSection";
 
 export default function Home() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
@@ -404,6 +405,7 @@ export default function Home() {
                 isLoading={missedStoriesLoading}
                 error={missedStoriesError}
               />
+              <GetUpdatesSection />
             </>
           )}
         </div>
