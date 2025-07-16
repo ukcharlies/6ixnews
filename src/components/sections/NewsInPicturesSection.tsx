@@ -64,12 +64,13 @@ const NewsInPicturesSection = ({ stories }: NewsInPicturesSectionProps) => {
                   fill
                   className="object-cover"
                 />
+                <div className="absolute top-4 left-4 px-3 py-1.5 bg-[#999999] rounded-full">
+                  <span className="text-sm font-medium text-white">
+                    World News
+                  </span>
+                </div>
               </div>
-              <div className="text-left">
-                <span className="text-sm font-semibold text-[#F85FD0]">
-                  World News
-                </span>
-              </div>
+
               <h3 className="text-lg font-bold text-gray-900 leading-tight">
                 {firstStory.title}
               </h3>
@@ -111,7 +112,7 @@ const NewsInPicturesSection = ({ stories }: NewsInPicturesSectionProps) => {
       {/* Desktop View - Grid Layout */}
       <div className="hidden md:block">
         <div className="grid grid-cols-4 grid-rows-2 gap-4 h-96">
-          {firstStory && (
+          {firstStory ? (
             <Link
               href={`/stories/${firstStory.id}`}
               className="col-span-2 row-span-2 relative group cursor-pointer"
@@ -123,6 +124,11 @@ const NewsInPicturesSection = ({ stories }: NewsInPicturesSectionProps) => {
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
+                <div className="absolute top-4 left-4 px-3 py-1.5 bg-[#813D97] rounded-full">
+                  <span className="text-sm font-medium text-white">
+                    World News
+                  </span>
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <span className="text-sm font-semibold mb-2 block text-[#F85FD0]">
@@ -134,6 +140,13 @@ const NewsInPicturesSection = ({ stories }: NewsInPicturesSectionProps) => {
                 </div>
               </div>
             </Link>
+          ) : (
+            <div className="col-span-2 row-span-2 bg-white rounded-lg p-8 flex flex-col items-center justify-center">
+              <ImageOff className="w-16 h-16 text-gray-400 mb-4" />
+              <p className="text-gray-500 text-lg text-center">
+                No featured story available
+              </p>
+            </div>
           )}
 
           {/* Other Stories */}
