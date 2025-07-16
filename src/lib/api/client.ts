@@ -93,34 +93,18 @@ export const fetchTopStories = async (): Promise<IStory[]> => {
   return [];
 };
 
-export const fetchEditorsPicks = async (
-  page = 1,
-  perPage = 15
-): Promise<IStory[]> => {
-  const response = await apiCall<any>(
-    `/editor-picks?page=${page}&per_page=${perPage}`
-  );
-  // Handle the nested data structure and extract story objects, filter out null stories
-  if (
-    response &&
-    response.data &&
-    response.data.data &&
-    Array.isArray(response.data.data)
-  ) {
-    return response.data.data
-      .map((item: any) => item.story)
-      .filter((story: any) => story !== null);
+export async function fetchEditorsPicks(page = 1, limit = 15) {
+  try {
+    const response = await fetch(
+      `${API_BASE}/editor-picks?page=${page}&limit=${limit}`
+    );
+    const json = await response.json();
+    return json.data;
+  } catch (error) {
+    console.error("Error fetching editor picks:", error);
+    return { data: [] };
   }
-  // Fallback handlers
-  if (response && response.data && Array.isArray(response.data)) {
-    return response.data;
-  }
-  if (Array.isArray(response)) {
-    return response;
-  }
-  console.warn("Unexpected editors picks response format:", response);
-  return [];
-};
+}
 
 export const fetchFeaturedStories = async (
   page = 1,
