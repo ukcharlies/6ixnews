@@ -1,7 +1,7 @@
 import { IStory } from "@/types/story";
-import StoryCard from "@/components/ui/StoryCard";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Link from "next/link";
+import { useState } from "react";
 
 interface MissedStoriesSectionProps {
   stories: IStory[];
@@ -14,8 +14,27 @@ export default function MissedStoriesSection({
   isLoading,
   error,
 }: MissedStoriesSectionProps) {
-  // Ensure stories is always an array
+  const [currentPage, setCurrentPage] = useState(0);
+  const storiesPerPage = 6;
   const safeStories = Array.isArray(stories) ? stories : [];
+
+  // Calculate total pages
+  const totalPages = Math.ceil(safeStories.length / storiesPerPage);
+
+  // Get current page stories
+  const currentStories = safeStories.slice(
+    currentPage * storiesPerPage,
+    (currentPage + 1) * storiesPerPage
+  );
+
+  // Format date
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   if (error) {
     return (
@@ -45,29 +64,46 @@ export default function MissedStoriesSection({
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold mb-6 uppercase">
-        Stories You May Have Missed
-      </h2>
+      {/* Modified header and pagination container */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 space-y-4 lg:space-y-0">
+        <h2 className="text-2xl font-bold uppercase order-1">
+          Stories You May Have Missed
+        </h2>
+
+        {totalPages > 1 && (
+          <div className="flex space-x-2 order-2 lg:order-1">
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(index)}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  currentPage === index ? "bg-[#F52A32]" : "bg-gray-300"
+                }`}
+                aria-label={`Page ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
       {safeStories.length === 0 ? (
         <p className="text-gray-600">No missed stories available.</p>
       ) : (
         <div className="bg-white shadow-sm rounded-lg p-6">
-          <div className="space-y-4">
-            {safeStories.map((story) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-4">
+            {currentStories.map((story) => (
               <Link key={story.id} href={`/stories/${story.id}`}>
                 <div className="flex items-start space-x-3 group cursor-pointer">
-                  <div className="w-2 h-2 bg-[#282828] mt-2 flex-shrink-0"></div>
                   <div className="flex-1">
                     <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 line-clamp-2">
                       {story.title}
                     </h3>
-                    <div className="flex items-center mt-2 text-sm text-gray-500">
-                      <span className="mr-2">
-                        {story.author || "Unknown Author"}
-                      </span>
-                      <span>•</span>
-                      <span className="ml-2">
-                        {new Date(story.created_at).toLocaleDateString()}
+                    <div className="flex items-center mt-2 text-sm text-gray-500 space-x-2">
+                      <span className="w-1.5 h-1.5 bg-[#F52A32] rounded-full" />
+                      <span>{formatDate(story.created_at)}</span>
+                      <span className="w-1.5 h-1.5 bg-[#F52A32] rounded-full" />
+                      <span>
+                        {story.category?.category_name || "Uncategorized"}
                       </span>
                     </div>
                   </div>

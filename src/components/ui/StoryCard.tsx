@@ -244,7 +244,8 @@ export default function StoryCard({
             {story.description}
           </p>
 
-          <div className="flex items-center justify-between text-xs text-gray-500">
+          {/* Updated mobile-first meta info layout */}
+          <div className="flex flex-col space-y-1 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500">
             <span className="font-medium">{story.author}</span>
             <span>{formatDate(story.created_at)}</span>
           </div>
