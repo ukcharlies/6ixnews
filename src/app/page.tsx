@@ -65,8 +65,12 @@ export default function Home() {
     queryFn: async () => {
       console.log("Fetching editors picks...");
       const result = await fetchEditorsPicks(1, 15);
-      console.log("Editors picks result:", result);
-      return result;
+      // Transform the data to extract story objects
+      const validStories = result?.data?.data
+        ?.map((item: any) => item.story)
+        ?.filter((story: any) => story !== null);
+      console.log("Editors picks result:", validStories);
+      return validStories || [];
     },
     staleTime: 3 * 60 * 1000,
     enabled: !selectedCategoryId,
@@ -120,23 +124,43 @@ export default function Home() {
     enabled: !selectedCategoryId,
   });
 
+  // Update the validEditorsPicks memo
+  const validEditorsPicks = useMemo(() => {
+    if (!Array.isArray(editorsPicks)) return [];
+    return editorsPicks.filter(
+      (story: any) => story && typeof story === "object" && story.id
+    );
+  }, [editorsPicks]);
+
   // Combine all stories for search
   const allStories = useMemo(() => {
     const stories = [
       ...topStories,
-      ...editorsPicks,
+      ...validEditorsPicks,
       ...featuredStories,
       ...latestStories,
       ...missedStories,
     ];
 
+    // Filter out null/undefined stories and ensure they have required properties
+    const validStories = stories.filter(
+      (story) => story && typeof story === "object" && story.id
+    );
+
     // Remove duplicates based on story ID
-    const uniqueStories = stories.filter(
-      (story, index, self) => index === self.findIndex((s) => s.id === story.id)
+    const uniqueStories = validStories.filter(
+      (story, index, self) =>
+        index === self.findIndex((s) => s && s.id === story.id)
     );
 
     return uniqueStories;
-  }, [topStories, editorsPicks, featuredStories, latestStories, missedStories]);
+  }, [
+    topStories,
+    validEditorsPicks,
+    featuredStories,
+    latestStories,
+    missedStories,
+  ]);
 
   // Helper function to safely get category name
   const getCategoryName = (category: string | object): string => {
@@ -162,8 +186,8 @@ export default function Home() {
   }, [topStories, searchQuery]);
 
   const filteredEditorsPicks = useMemo(() => {
-    if (!searchQuery) return editorsPicks;
-    return editorsPicks.filter(
+    if (!searchQuery) return validEditorsPicks;
+    return validEditorsPicks.filter(
       (story) =>
         story.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -171,7 +195,7 @@ export default function Home() {
           .toLowerCase()
           .includes(searchQuery.toLowerCase())
     );
-  }, [editorsPicks, searchQuery]);
+  }, [validEditorsPicks, searchQuery]);
 
   const filteredFeaturedStories = useMemo(() => {
     if (!searchQuery) return featuredStories;
