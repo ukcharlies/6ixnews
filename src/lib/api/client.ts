@@ -99,10 +99,17 @@ export async function fetchEditorsPicks(page = 1, limit = 15) {
       `${API_BASE}/editor-picks?page=${page}&limit=${limit}`
     );
     const json = await response.json();
-    return json.data;
+
+    // Extract and transform story objects from editor picks
+    const stories = json.data.data
+      .map((item: any) => item.story)
+      .filter((story: any) => story !== null);
+
+    // Return the clean array of stories
+    return stories;
   } catch (error) {
     console.error("Error fetching editor picks:", error);
-    return { data: [] };
+    return [];
   }
 }
 
