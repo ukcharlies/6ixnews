@@ -38,7 +38,7 @@ export default function MissedStoriesSection({
 
   if (error) {
     return (
-      <section className="py-8">
+      <section className="py-4">
         <h2 className="text-2xl font-bold mb-6">Stories You Missed</h2>
         <ErrorMessage message="Failed to load missed stories" />
       </section>
