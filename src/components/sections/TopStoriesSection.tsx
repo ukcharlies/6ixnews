@@ -4,6 +4,8 @@ import ErrorMessage from "@/components/ui/ErrorMessage";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface TopStoriesSectionProps {
   stories: IStory[];
@@ -20,6 +22,10 @@ export default function TopStoriesSection({
 }: TopStoriesSectionProps) {
   // Ensure stories is always an array
   const safeStories = Array.isArray(stories) ? stories : [];
+
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const storiesPerPage = 5;
 
   if (error) {
     return (
@@ -79,6 +85,18 @@ export default function TopStoriesSection({
   }
 
   const [firstStory, ...otherStories] = safeStories;
+
+  // Get other stories after the first 4
+  const politicsStories = otherStories.slice(4);
+  const totalPages = Math.ceil(politicsStories.length / storiesPerPage);
+
+  // Calculate current page stories
+  const indexOfLastStory = currentPage * storiesPerPage;
+  const indexOfFirstStory = indexOfLastStory - storiesPerPage;
+  const currentStories = politicsStories.slice(
+    indexOfFirstStory,
+    indexOfLastStory
+  );
 
   return (
     <section className="py-8">
@@ -247,7 +265,7 @@ export default function TopStoriesSection({
               OTHER STORIES IN POLITICS
             </h2>
             <div className="grid grid-cols-1 gap-8">
-              {otherStories.slice(4).map((story) => (
+              {currentStories.map((story) => (
                 <Link href={`/stories/${story.id}`} key={story.id}>
                   <div className="flex flex-col lg:flex-row gap-6 group cursor-pointer">
                     <div className="relative w-full lg:w-1/3 aspect-[16/9]">
@@ -259,7 +277,7 @@ export default function TopStoriesSection({
                       />
                     </div>
                     <div className="flex-1 space-y-3">
-                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-pink-400 transition-colors">
                         {story.title}
                       </h3>
                       <p className="text-sm text-gray-500">
@@ -271,13 +289,64 @@ export default function TopStoriesSection({
                       <p className="text-gray-600">
                         {story.description?.slice(0, 200)}...
                       </p>
-                      <button className="px-4 py-2 bg-[white] text-#999999 rounded-full hover:bg-opacity-90 transition-colors text-sm">
+                      <button className="px-4 py-2 bg-[#ffffff10] text-#999999 rounded-full hover:bg-opacity-90 transition-colors text-sm border-2">
                         Continue Reading
                       </button>
                     </div>
                   </div>
                 </Link>
               ))}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center  mt-8 border-t border-gray-200 pt-4">
+              <p className="text-sm text-gray-600">
+                Showing {indexOfFirstStory + 1} -{" "}
+                {Math.min(indexOfLastStory, politicsStories.length)} of{" "}
+                {politicsStories.length}
+              </p>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="p-2 text-gray-600  disabled:opacity-50"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <div className="flex space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`min-w-[32px] h-7 flex items-center rounded-xl justify-center ${
+                          currentPage === page
+                            ? "bg-black text-white"
+                            : "bg-[#999999] text-white hover:bg-opacity-80"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                </div>
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="p-2 text-gray-600 disabled:opacity-50"
+                  aria-label="Next page"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
             </div>
           </>
         )}
