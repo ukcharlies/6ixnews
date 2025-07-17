@@ -54,6 +54,7 @@ const GetUpdatesSection = () => {
                 placeholder="Enter your email address"
                 className="w-full px-4 py-3 bg-[#DEDEDE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F52A32]"
                 required
+                suppressHydrationWarning
               />
               <button
                 type="submit"
