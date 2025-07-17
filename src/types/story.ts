@@ -23,6 +23,7 @@ export interface IStory {
   banner_image: string;
   created_at: string;
   updated_at: string;
+  bookmarked?: boolean; // Add this property
 }
 
 export interface ICategory {

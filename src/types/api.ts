@@ -12,6 +12,7 @@ export interface IStory {
   author: string;
   category: string;
   imageUrl: string;
+  bookmarked?: boolean; // Add this property
 }
 
 export interface IApiResponse<T> {
