@@ -67,6 +67,7 @@ export default function Footer() {
     { name: "About Us", href: "/about" },
     { name: "Contact Us", href: "/contact" },
     { name: "Advert Rate", href: "/advert-rate" },
+    { name: "Bookmarks", href: "/bookmarks" },
   ];
 
   // Combine all navigation items

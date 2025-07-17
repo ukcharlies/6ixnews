@@ -352,6 +352,24 @@ export default function Header() {
                       Sign Up
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
                     </Link>
+
+                    <Link
+                      href="/login"
+                      className="relative text-white font-medium transition-colors group py-2"
+                    >
+                      Login
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
+                    </Link>
+
+                    <span className="text-gray-400">/</span>
+
+                    <Link
+                      href="/signup"
+                      className="relative text-white font-medium transition-colors group py-2"
+                    >
+                      Sign Up
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F52A32] transition-all duration-300 ease-out group-hover:w-full"></span>
+                    </Link>
                   </nav>
                 </div>
               </div>
