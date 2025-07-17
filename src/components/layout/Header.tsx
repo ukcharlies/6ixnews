@@ -11,6 +11,12 @@ import {
 } from "@/lib/store/categorySlice";
 import { useCategories } from "@/hooks/useCategories";
 import SearchModal from "@/components/SearchModal";
+import { useQuery } from "@tanstack/react-query";
+import {
+  fetchEditorsPicks,
+  fetchLatestStories,
+  fetchTopStories,
+} from "@/lib/api/client";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,6 +28,35 @@ export default function Header() {
   // Fetch dynamic categories
   const { data: categories = [], isLoading: categoriesLoading } =
     useCategories();
+
+  // Fetch all stories
+  const { data: editorsPicks = [] } = useQuery({
+    queryKey: ["editorsPicks"],
+    queryFn: () => fetchEditorsPicks(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const { data: latestStories = [] } = useQuery({
+    queryKey: ["latestStories"],
+    queryFn: () => fetchEditorsPicks(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: topStories = [] } = useQuery({
+    queryKey: ["topStories"],
+    queryFn: fetchTopStories,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Combine all stories and remove duplicates
+  const allStories = [
+    ...new Map(
+      [...editorsPicks, ...latestStories, ...topStories].map((story) => [
+        story.id,
+        story,
+      ])
+    ).values(),
+  ];
 
   // Update date and time
   useEffect(() => {
@@ -455,7 +490,7 @@ export default function Header() {
       <SearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
-        allStories={[]} // Will be passed from parent component
+        allStories={allStories}
       />
     </>
   );
