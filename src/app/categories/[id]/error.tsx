@@ -1,12 +1,6 @@
 "use client";
 
-export default function Error({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center">

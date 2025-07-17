@@ -12,11 +12,7 @@ import {
 import { useCategories } from "@/hooks/useCategories";
 import SearchModal from "@/components/SearchModal";
 import { useQuery } from "@tanstack/react-query";
-import {
-  fetchEditorsPicks,
-  fetchLatestStories,
-  fetchTopStories,
-} from "@/lib/api/client";
+import { fetchEditorsPicks, fetchTopStories } from "@/lib/api/client";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
@@ -24,7 +20,7 @@ export default function Header() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState("");
   const dispatch = useAppDispatch();
-  const { searchQuery } = useAppSelector((state) => state.category);
+
   const router = useRouter();
 
   // Fetch dynamic categories

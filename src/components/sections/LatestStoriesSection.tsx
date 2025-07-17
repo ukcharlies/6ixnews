@@ -2,6 +2,7 @@ import { IStory } from "@/types/story";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface LatestStoriesSectionProps {
   stories: IStory[];
@@ -158,9 +159,11 @@ export default function LatestStoriesSection({
                       {/* News Card */}
                       <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
                         {/* Background Image */}
-                        <img
+                        <Image
                           src={story.banner_image || "/api/placeholder/400/320"}
                           alt={story.title}
+                          width={400}
+                          height={320}
                           className="w-full h-full object-cover"
                         />
 
@@ -270,9 +273,11 @@ export default function LatestStoriesSection({
                 >
                   <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                     {/* Background Image */}
-                    <img
+                    <Image
                       src={story.banner_image || "/api/placeholder/320/256"}
                       alt={story.title}
+                      width={320}
+                      height={256}
                       className="w-full h-full object-cover"
                     />
                     {/* Gradient Overlay */}

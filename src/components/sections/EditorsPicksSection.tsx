@@ -3,6 +3,7 @@ import { Crown, ChevronRight, Clock } from "lucide-react";
 import { useState } from "react";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Link from "next/link";
+import Image from "next/image";
 
 interface EditorsPicksSectionProps {
   stories: IStory[];
@@ -104,11 +105,13 @@ export default function EditorsPicksSection({
             <div className="flex-1 lg:flex-grow-2 h-full">
               <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg h-full flex flex-col">
                 <div className="relative h-[280px] lg:h-[400px]">
-                  <img
+                  <Image
                     src={
                       safeStories[0].banner_image || "/placeholder-image.jpg"
                     }
                     alt={safeStories[0].title}
+                    width={800}
+                    height={400}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 left-4 flex items-center bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5">
@@ -250,11 +253,13 @@ export default function EditorsPicksSection({
                   <div className="flex-1 lg:flex-grow-2 h-full">
                     <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg h-full flex flex-col">
                       <div className="relative h-[280px] lg:h-[400px]">
-                        <img
+                        <Image
                           src={
                             firstStory.banner_image || "/placeholder-image.jpg"
                           }
                           alt={firstStory.title}
+                          width={800}
+                          height={400}
                           className="w-full h-full object-cover"
                         />
                       </div>

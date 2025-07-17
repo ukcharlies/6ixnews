@@ -11,7 +11,6 @@ import {
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { initializeBookmarks } from "@/lib/store/bookmarkSlice";
-import { IStory } from "@/types/story";
 
 export default function BookmarksPage() {
   const dispatch = useDispatch();

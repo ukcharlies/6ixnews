@@ -27,6 +27,7 @@ import { Story } from "@/types/story";
 import NewsInVideosSection from "@/components/sections/NewsInVideosSection";
 import NewsInPicturesSection from "@/components/sections/NewsInPicturesSection";
 import GetUpdatesSection from "@/components/sections/GetUpdatesSection";
+import Image from "next/image";
 
 export default function Home() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
@@ -298,16 +299,20 @@ export default function Home() {
               {/* Mobile Layout - Stacked */}
               <div className="lg:hidden space-y-6">
                 <div className="w-full">
-                  <img
+                  <Image
                     src="/body add.png"
                     alt="Advertisement"
+                    width={800}
+                    height={200}
                     className="w-full h-auto rounded-lg shadow-sm"
                   />
                 </div>
                 <div className="w-full">
-                  <img
+                  <Image
                     src="/body-add2.png"
                     alt="Advertisement"
+                    width={800}
+                    height={200}
                     className="w-full h-auto rounded-lg shadow-sm"
                   />
                 </div>
@@ -316,16 +321,20 @@ export default function Home() {
               {/* Large Screen Layout - Horizontal */}
               <div className="hidden lg:flex lg:space-x-8 lg:justify-between">
                 <div className="flex-1">
-                  <img
+                  <Image
                     src="/body add.png"
                     alt="Advertisement"
+                    width={800}
+                    height={200}
                     className="w-full h-auto rounded-lg shadow-sm"
                   />
                 </div>
                 <div className="flex-1">
-                  <img
+                  <Image
                     src="/body-add2.png"
                     alt="Advertisement"
+                    width={800}
+                    height={200}
                     className="w-full h-auto rounded-lg shadow-sm"
                   />
                 </div>
