@@ -2,6 +2,7 @@ import { IStory, ICategory } from "@/types/story";
 import { Crown, ChevronRight, Clock } from "lucide-react";
 import { useState } from "react";
 import ErrorMessage from "@/components/ui/ErrorMessage";
+import Link from "next/link";
 
 interface EditorsPicksSectionProps {
   stories: IStory[];
@@ -96,50 +97,57 @@ export default function EditorsPicksSection({
       <div className="flex flex-col lg:flex-row lg:space-x-8 lg:min-h-[650px]">
         {/* Featured Story */}
         {safeStories[0] && (
-          <div className="flex-1 lg:flex-grow-2 lg:h-full mb-0">
-            <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg lg:h-full flex flex-col">
-              <div className="relative h-[280px] lg:h-[400px]">
-                <img
-                  src={safeStories[0].banner_image || "/placeholder-image.jpg"}
-                  alt={safeStories[0].title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 left-4 flex items-center bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5">
-                  <div className="w-6 h-6 bg-[#D72B81] rounded-full flex items-center justify-center mr-2">
-                    <Crown className="w-3 h-3 text-white" />
-                  </div>
-                  <span className="text-white text-sm font-medium">
-                    Editor's Pick
-                  </span>
-                </div>
-              </div>
-              {/* Story Content */}
-              <div className="p-8 flex-1 flex flex-col">
-                <div className="mb-auto">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
-                    {safeStories[0].title}
-                  </h3>
-                  <p className="text-base text-gray-600 mb-1 leading-relaxed line-clamp-3">
-                    {safeStories[0].description}
-                  </p>
-                </div>
-                <div className="flex items-center pt-4 border-t border-gray-100">
-                  <div className="w-2.5 h-2.5 bg-[#F52A32] rounded-full mr-3"></div>
-                  <div className="flex items-center divide-x divide-gray-300">
-                    <span className="text-base font-medium text-gray-700 pr-3">
-                      By {safeStories[0].author || "Unknown Author"}
+          <Link
+            href={`/stories/${safeStories[0].id}`}
+            className="block flex-1 lg:flex-grow-2 lg:h-full mb-0"
+          >
+            <div className="flex-1 lg:flex-grow-2 lg:h-full mb-0">
+              <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg lg:h-full flex flex-col">
+                <div className="relative h-[280px] lg:h-[400px]">
+                  <img
+                    src={
+                      safeStories[0].banner_image || "/placeholder-image.jpg"
+                    }
+                    alt={safeStories[0].title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 left-4 flex items-center bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5">
+                    <div className="w-6 h-6 bg-[#D72B81] rounded-full flex items-center justify-center mr-2">
+                      <Crown className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-white text-sm font-medium">
+                      Editor's Pick
                     </span>
-                    <div className="flex items-center pl-3 text-gray-500">
-                      <Clock className="w-4 h-4 mr-1" />
-                      <span className="text-sm">
-                        {formatDate(safeStories[0].created_at)}
+                  </div>
+                </div>
+                {/* Story Content */}
+                <div className="p-8 flex-1 flex flex-col">
+                  <div className="mb-auto">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+                      {safeStories[0].title}
+                    </h3>
+                    <p className="text-base text-gray-600 mb-1 leading-relaxed line-clamp-3">
+                      {safeStories[0].description}
+                    </p>
+                  </div>
+                  <div className="flex items-center pt-4 border-t border-gray-100">
+                    <div className="w-2.5 h-2.5 bg-[#F52A32] rounded-full mr-3"></div>
+                    <div className="flex items-center divide-x divide-gray-300">
+                      <span className="text-base font-medium text-gray-700 pr-3">
+                        By {safeStories[0].author || "Unknown Author"}
                       </span>
+                      <div className="flex items-center pl-3 text-gray-500">
+                        <Clock className="w-4 h-4 mr-1" />
+                        <span className="text-sm">
+                          {formatDate(safeStories[0].created_at)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* More Stories */}
@@ -151,20 +159,23 @@ export default function EditorsPicksSection({
               </h2>
               <div className="space-y-4 flex-1 overflow-y-auto">
                 {paginatedStories[currentPage].map((story) => (
-                  <div
+                  <Link
                     key={story.id}
-                    className="flex items-start space-x-3 group"
+                    href={`/stories/${story.id}`}
+                    className="block"
                   >
-                    <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 cursor-pointer line-clamp-2">
-                        {story.title}
-                      </h3>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {story.author || "Unknown Author"}
-                      </p>
+                    <div className="flex items-start space-x-3 group">
+                      <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 cursor-pointer line-clamp-2">
+                          {story.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {story.author || "Unknown Author"}
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
               {/* Pagination - unchanged */}
@@ -232,43 +243,48 @@ export default function EditorsPicksSection({
             <div className="flex flex-col lg:flex-row lg:space-x-8 lg:min-h-[650px]">
               {/* Featured Category Story */}
               {firstStory && (
-                <div className="flex-1 lg:flex-grow-2 mb-0 lg:mb-0">
-                  <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg h-full flex flex-col">
-                    <div className="relative h-[280px] lg:h-[400px]">
-                      <img
-                        src={
-                          firstStory.banner_image || "/placeholder-image.jpg"
-                        }
-                        alt={firstStory.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-8 flex-1 flex flex-col">
-                      <div className="mb-auto">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
-                          {firstStory.title}
-                        </h3>
-                        <p className="text-base text-gray-600 mb-1 leading-relaxed line-clamp-3">
-                          {firstStory.description}
-                        </p>
+                <Link
+                  href={`/stories/${firstStory.id}`}
+                  className="block flex-1 lg:flex-grow-2 mb-0 lg:mb-0"
+                >
+                  <div className="flex-1 lg:flex-grow-2 mb-0 lg:mb-0">
+                    <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg h-full flex flex-col">
+                      <div className="relative h-[280px] lg:h-[400px]">
+                        <img
+                          src={
+                            firstStory.banner_image || "/placeholder-image.jpg"
+                          }
+                          alt={firstStory.title}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      <div className="flex items-center pt-4 border-t border-gray-100">
-                        <div className="w-2.5 h-2.5 bg-[#F52A32] rounded-full mr-3"></div>
-                        <div className="flex items-center divide-x divide-gray-300">
-                          <span className="text-base font-medium text-gray-700 pr-3">
-                            By {firstStory.author || "Unknown Author"}
-                          </span>
-                          <div className="flex items-center pl-3 text-gray-500">
-                            <Clock className="w-4 h-4 mr-1" />
-                            <span className="text-sm">
-                              {formatDate(firstStory.created_at)}
+                      <div className="p-8 flex-1 flex flex-col">
+                        <div className="mb-auto">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+                            {firstStory.title}
+                          </h3>
+                          <p className="text-base text-gray-600 mb-1 leading-relaxed line-clamp-3">
+                            {firstStory.description}
+                          </p>
+                        </div>
+                        <div className="flex items-center pt-4 border-t border-gray-100">
+                          <div className="w-2.5 h-2.5 bg-[#F52A32] rounded-full mr-3"></div>
+                          <div className="flex items-center divide-x divide-gray-300">
+                            <span className="text-base font-medium text-gray-700 pr-3">
+                              By {firstStory.author || "Unknown Author"}
                             </span>
+                            <div className="flex items-center pl-3 text-gray-500">
+                              <Clock className="w-4 h-4 mr-1" />
+                              <span className="text-sm">
+                                {formatDate(firstStory.created_at)}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               )}
 
               {/* Category Stories List */}
@@ -277,20 +293,23 @@ export default function EditorsPicksSection({
                   <div className="bg-white shadow-sm p-6 rounded-b-lg lg:rounded-lg h-full flex flex-col -mt-[1px]">
                     <div className="space-y-4 flex-1 overflow-y-auto">
                       {restStories.map((story) => (
-                        <div
+                        <Link
                           key={story.id}
-                          className="flex items-start space-x-3 group cursor-pointer"
+                          href={`/stories/${story.id}`}
+                          className="block"
                         >
-                          <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
-                          <div className="flex-1">
-                            <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 line-clamp-2">
-                              {story.title}
-                            </h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {story.author || "Unknown Author"}
-                            </p>
+                          <div className="flex items-start space-x-3 group cursor-pointer">
+                            <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
+                            <div className="flex-1">
+                              <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 line-clamp-2">
+                                {story.title}
+                              </h3>
+                              <p className="text-sm text-gray-500 mt-1">
+                                {story.author || "Unknown Author"}
+                              </p>
+                            </div>
                           </div>
-                        </div>
+                        </Link>
                       ))}
                     </div>
 

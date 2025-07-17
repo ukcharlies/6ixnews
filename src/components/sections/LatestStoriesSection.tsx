@@ -1,6 +1,7 @@
 import { IStory } from "@/types/story";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface LatestStoriesSectionProps {
   stories: IStory[];
@@ -135,70 +136,75 @@ export default function LatestStoriesSection({
                 if (!isVisible) return null;
 
                 return (
-                  <div
+                  <Link
                     key={story.id}
-                    className={`relative cursor-pointer transition-all duration-500 ease-in-out ${
-                      isFocused
-                        ? "w-96 h-80 z-20 scale-100"
-                        : isAdjacent
-                        ? "w-48 h-64 z-10 scale-90 opacity-80"
-                        : "w-40 h-56 z-0 scale-75 opacity-60"
-                    }`}
-                    onClick={() => handleCardClick(index)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`View news: ${story.title}`}
+                    href={`/stories/${story.id}`}
+                    className="block"
                   >
-                    {/* News Card */}
-                    <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                      {/* Background Image */}
-                      <img
-                        src={story.banner_image || "/api/placeholder/400/320"}
-                        alt={story.title}
-                        className="w-full h-full object-cover"
-                      />
+                    <div
+                      className={`relative cursor-pointer transition-all duration-500 ease-in-out ${
+                        isFocused
+                          ? "w-96 h-80 z-20 scale-100"
+                          : isAdjacent
+                          ? "w-48 h-64 z-10 scale-90 opacity-80"
+                          : "w-40 h-56 z-0 scale-75 opacity-60"
+                      }`}
+                      onClick={() => handleCardClick(index)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View news: ${story.title}`}
+                    >
+                      {/* News Card */}
+                      <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                        {/* Background Image */}
+                        <img
+                          src={story.banner_image || "/api/placeholder/400/320"}
+                          alt={story.title}
+                          className="w-full h-full object-cover"
+                        />
 
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                      {/* Category Badge */}
-                      <div className="absolute top-4 left-4">
-                        <span
-                          className={`px-3 py-1 text-xs font-medium text-white bg-black/50 backdrop-blur-sm rounded-full ${
-                            isFocused ? "text-sm" : ""
-                          }`}
-                        >
-                          {getCategoryName(story.category) || "News"}
-                        </span>
-                      </div>
+                        {/* Category Badge */}
+                        <div className="absolute top-4 left-4">
+                          <span
+                            className={`px-3 py-1 text-xs font-medium text-white bg-black/50 backdrop-blur-sm rounded-full ${
+                              isFocused ? "text-sm" : ""
+                            }`}
+                          >
+                            {getCategoryName(story.category) || "News"}
+                          </span>
+                        </div>
 
-                      {/* Title at bottom */}
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <h3
-                          className={`text-white font-bold leading-tight line-clamp-3 transition-all duration-300 ${
-                            isFocused
-                              ? "text-xl"
-                              : isAdjacent
-                              ? "text-base"
-                              : "text-sm"
-                          }`}
-                        >
-                          {story.title}
-                        </h3>
+                        {/* Title at bottom */}
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <h3
+                            className={`text-white font-bold leading-tight line-clamp-3 transition-all duration-300 ${
+                              isFocused
+                                ? "text-xl"
+                                : isAdjacent
+                                ? "text-base"
+                                : "text-sm"
+                            }`}
+                          >
+                            {story.title}
+                          </h3>
+                          {isFocused && (
+                            <p className="text-gray-200 text-sm mt-2 line-clamp-2 opacity-90">
+                              {story.description}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Focus indicator ring */}
                         {isFocused && (
-                          <p className="text-gray-200 text-sm mt-2 line-clamp-2 opacity-90">
-                            {story.description}
-                          </p>
+                          <div className="absolute inset-0 ring-4 ring-[#F52A32] ring-opacity-50 rounded-lg pointer-events-none" />
                         )}
                       </div>
-
-                      {/* Focus indicator ring */}
-                      {isFocused && (
-                        <div className="absolute inset-0 ring-4 ring-[#F52A32] ring-opacity-50 rounded-lg pointer-events-none" />
-                      )}
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -257,11 +263,11 @@ export default function LatestStoriesSection({
           <div className="lg:hidden overflow-x-auto">
             <div className="flex space-x-4 pb-4">
               {safeStories.map((story, index) => (
-                <div
+                <Link
                   key={story.id}
-                  className="flex-shrink-0 w-80 h-64 relative group cursor-pointer"
+                  href={`/stories/${story.id}`}
+                  className="block flex-shrink-0 w-80 h-64 relative group cursor-pointer"
                 >
-                  {/* News Card */}
                   <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                     {/* Background Image */}
                     <img
@@ -269,17 +275,14 @@ export default function LatestStoriesSection({
                       alt={story.title}
                       className="w-full h-full object-cover"
                     />
-
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
                     {/* Category Badge */}
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1 text-xs font-medium text-white bg-black/40 backdrop-blur-sm rounded-full">
                         {getCategoryName(story.category) || "News"}
                       </span>
                     </div>
-
                     {/* Title at bottom */}
                     <div className="absolute bottom-4 left-4 right-4">
                       <h3 className="text-white font-bold text-lg leading-tight line-clamp-3">
@@ -287,7 +290,7 @@ export default function LatestStoriesSection({
                       </h3>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
