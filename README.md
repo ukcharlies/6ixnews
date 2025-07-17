@@ -1,36 +1,211 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 6ixNews - Modern News/Blog Platform
 
-## Getting Started
+## Overview
 
-First, run the development server:
+6ixNews is a modern, TypeScript-based news platform built with Next.js 13+ and React 18+. It offers category-based content organization, story management, and a responsive design optimized for all devices.
+
+## Features 🚀
+
+### Content Management
+
+- Category-based story organization
+- Dynamic content filtering
+- Featured stories section
+- Editor's picks showcase
+- Bookmarking functionality
+- Story pagination
+
+### User Experience
+
+- Responsive design for all devices
+- Image optimization
+- Reading time estimates
+- Smart content truncation
+- Date formatting
+- Mobile-friendly category navigation
+
+## Technical Architecture 🏗️
+
+### Core Technologies
+
+- Next.js 13+ - Frontend framework
+- React 18+ - UI library
+- TypeScript - Programming language
+- Tailwind CSS - Styling
+- Redux Toolkit - State management
+
+### API Endpoints
+
+| Endpoint               | Description                   |
+| ---------------------- | ----------------------------- |
+| GET /api/stories       | Retrieve all stories          |
+| GET /api/categories    | Fetch available categories    |
+| GET /api/stories/{id}  | Get specific story details    |
+| GET /api/category/{id} | Get category-specific stories |
+
+### Key Components
+
+1. **CategoryNav**
+
+   - Category selection handling
+   - Navigation menu display
+   - Active state management
+
+2. **StoryContent**
+
+   - Story rendering
+   - Date formatting
+   - Interaction management (bookmarks/sharing)
+
+3. **EditorsPicksSection**
+   - Curated content display
+   - Pagination implementation
+   - Loading state management
+
+## Getting Started 🚦
+
+1. **Clone Repository**
+
+# News/Blog Web Application
+
+```bash
+git clone https://github.com/yourusername/6ixnews.git
+cd 6ixnews
+```
+
+2. **Install Dependencies**
+
+```bash
+npm install
+# or
+yarn install
+```
+
+3. **Configure Environment**
+
+```bash
+cp .env.example .env.local
+# Edit .env.local with your values
+```
+
+4. **Run Development Server**
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure 📁
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── components/
+│   ├── layout/
+│   │   ├── Header.tsx
+│   │   └── Footer.tsx
+│   └── sections/
+│       ├── CategoryNav/
+│       └── StoryContent/
+├── lib/
+│   └── store/
+├── pages/
+└── types/
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Component Usage 💻
 
-## Learn More
+### CategoryNav
 
-To learn more about Next.js, take a look at the following resources:
+```typescript
+<CategoryNav
+  categories={categories}
+  onSelect={(id) => handleCategorySelect(id)}
+  activeCategory={currentCategory}
+/>
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### StoryContent
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```typescript
+<StoryContent story={storyData} showImage={true} truncateLength={200} />
+```
 
-## Deploy on Vercel
+## State Management 🔄
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```typescript
+// Example Redux slice
+import { createSlice } from "@reduxjs/toolkit";
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+const categorySlice = createSlice({
+  name: "categories",
+  initialState,
+  reducers: {
+    setCategories: (state, action) => {
+      state.list = action.payload;
+    },
+  },
+});
+```
+
+```typescript
+interface Story {
+  id: number;
+  title: string;
+  content: string;
+  image_url: string;
+  category: Category;
+  created_at: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  category_name: string;
+}
+```
+
+## Contributing 🤝
+
+1. Fork repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open pull request
+
+## License 📝
+
+MIT License - See LICENSE file
+
+A modern news/blog platform built with Next.js, React, and TypeScript, featuring category-based content organization, story management, and a responsive user interface.
+
+## Project Overview
+
+This application serves as a content management and delivery platform that allows users to browse stories across different categories, bookmark articles, and enjoy a seamless reading experience.
+
+## Tech Stack
+
+- **Frontend Framework**: Next.js 13+
+- **UI Library**: React 18+
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Redux (with Redux Toolkit)
+
+## Project Structure
+
+```plaintext
+src/
+├── components/
+│   ├── layout/          # Core layout components
+│   │   ├── Header.tsx   # Main navigation header
+│   │   └── Footer.tsx   # Site footer
+│   └── sections/        # Feature-specific components
+│       ├── CategoryNav.tsx     # Category navigation
+│       └── StoryContent.tsx    # Story display component
+├── lib/
+│   └── store/          # Redux store configuration
+│       ├── bookmarkSlice.ts    # Bookmark functionality
+│       └── categorySlice.ts    # Category management
+├── pages/             # Next.js pages
+└── types/            # TypeScript type definitions
+```
