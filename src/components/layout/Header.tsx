@@ -17,6 +17,7 @@ import {
   fetchLatestStories,
   fetchTopStories,
 } from "@/lib/api/client";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,6 +25,7 @@ export default function Header() {
   const [currentDateTime, setCurrentDateTime] = useState("");
   const dispatch = useAppDispatch();
   const { searchQuery } = useAppSelector((state) => state.category);
+  const router = useRouter();
 
   // Fetch dynamic categories
   const { data: categories = [], isLoading: categoriesLoading } =
@@ -88,6 +90,12 @@ export default function Header() {
   const handleCategoryClick = (categoryId: number | null) => {
     dispatch(setSelectedCategory(categoryId));
     setMobileMenuOpen(false);
+    // Navigate to the appropriate route
+    if (categoryId === null) {
+      router.push("/");
+    } else {
+      router.push(`/categories/${categoryId}`);
+    }
   };
 
   const handleSearchClick = () => {
@@ -288,7 +296,10 @@ export default function Header() {
                   <nav className="flex space-x-6">
                     <Link
                       href="/"
-                      onClick={() => handleCategoryClick(null)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleCategoryClick(null);
+                      }}
                       className="relative text-white font-medium transition-colors group py-2"
                     >
                       Home
@@ -313,8 +324,11 @@ export default function Header() {
                           .map((category) => (
                             <Link
                               key={`desktop-category-${category.id}`}
-                              href="#"
-                              onClick={() => handleCategoryClick(category.id)}
+                              href={`/categories/${category.id}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCategoryClick(category.id);
+                              }}
                               className="relative text-white font-medium transition-colors group py-2"
                             >
                               {category.name}
@@ -416,12 +430,16 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="lg:hidden bg-[#1B1B1B] border-t border-gray-600">
             <div className="px-4 py-4 space-y-2">
-              <button
-                onClick={() => handleCategoryClick(null)}
+              <Link
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleCategoryClick(null);
+                }}
                 className="block w-full text-left px-4 py-3 text-white hover:bg-gray-700 rounded"
               >
                 Home
-              </button>
+              </Link>
 
               {categoriesLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
@@ -438,13 +456,17 @@ export default function Header() {
                         category.name
                     )
                     .map((category) => (
-                      <button
+                      <Link
                         key={`mobile-category-${category.id}`}
-                        onClick={() => handleCategoryClick(category.id)}
+                        href={`/categories/${category.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleCategoryClick(category.id);
+                        }}
                         className="block w-full text-left px-4 py-3 text-white hover:bg-gray-700 rounded"
                       >
                         {category.name}
-                      </button>
+                      </Link>
                     ))}
 
               <div className="pt-4 mt-4 border-t border-gray-600 space-y-2">
