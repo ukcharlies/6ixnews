@@ -258,11 +258,11 @@ export default function TopStoriesSection({
           ))}
         </div>
 
-        {/* Other Stories in Politics Section */}
+        {/* Other Stories in category Section */}
         {otherStories.length > 4 && (
           <>
             <h2 className="text-2xl font-bold mb-6 border-l-4 border-[#813D97] pl-4">
-              OTHER STORIES IN POLITICS
+              OTHER {title.toUpperCase()}
             </h2>
             <div className="grid grid-cols-1 gap-8">
               {currentStories.map((story) => (

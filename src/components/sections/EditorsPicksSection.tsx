@@ -94,15 +94,15 @@ export default function EditorsPicksSection({
   return (
     <section className="py-8">
       {/* Main Editor's Picks */}
-      <div className="flex flex-col lg:flex-row lg:space-x-8 lg:min-h-[650px]">
+      <div className="flex flex-col lg:flex-row lg:space-x-8">
         {/* Featured Story */}
         {safeStories[0] && (
           <Link
             href={`/stories/${safeStories[0].id}`}
-            className="block flex-1 lg:flex-grow-2 lg:h-full mb-0"
+            className="block flex-1 lg:flex-grow-2"
           >
-            <div className="flex-1 lg:flex-grow-2 lg:h-full mb-0">
-              <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg lg:h-full flex flex-col">
+            <div className="flex-1 lg:flex-grow-2 h-full">
+              <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg h-full flex flex-col">
                 <div className="relative h-[280px] lg:h-[400px]">
                   <img
                     src={
@@ -151,34 +151,34 @@ export default function EditorsPicksSection({
         )}
 
         {/* More Stories */}
-        {paginatedStories[currentPage]?.length > 0 && (
-          <div className="lg:mt-0 lg:w-1/3 lg:h-full">
-            <div className="bg-white shadow-sm p-6 rounded-b-lg lg:rounded-lg lg:h-full lg:flex lg:flex-col -mt-[1px]">
-              <h2 className="hidden lg:block text-2xl font-bold text-gray-900 mb-6">
-                More Stories
-              </h2>
-              <div className="space-y-4 flex-1 overflow-y-auto">
-                {paginatedStories[currentPage].map((story) => (
-                  <Link
-                    key={story.id}
-                    href={`/stories/${story.id}`}
-                    className="block"
-                  >
-                    <div className="flex items-start space-x-3 group">
-                      <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 cursor-pointer line-clamp-2">
-                          {story.title}
-                        </h3>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {story.author || "Unknown Author"}
-                        </p>
-                      </div>
+        <div className="lg:mt-0 lg:w-1/3">
+          <div className="bg-white shadow-sm p-6 rounded-b-lg lg:rounded-lg h-full flex flex-col -mt-[1px]">
+            <h2 className="hidden lg:block text-2xl font-bold text-gray-900 mb-6">
+              More Stories
+            </h2>
+            <div className="space-y-4 flex-1 overflow-y-auto">
+              {paginatedStories[currentPage]?.map((story) => (
+                <Link
+                  key={story.id}
+                  href={`/stories/${story.id}`}
+                  className="block"
+                >
+                  <div className="flex items-start space-x-3 group">
+                    <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 cursor-pointer line-clamp-2">
+                        {story.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {story.author || "Unknown Author"}
+                      </p>
                     </div>
-                  </Link>
-                ))}
-              </div>
-              {/* Pagination - unchanged */}
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {/* Pagination */}
+            {paginatedStories.length > 0 && (
               <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
                 <button
                   onClick={() =>
@@ -204,9 +204,9 @@ export default function EditorsPicksSection({
                   Next
                 </button>
               </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Horizontal Separator */}
@@ -240,14 +240,14 @@ export default function EditorsPicksSection({
               <ChevronRight className="w-6 h-6 text-[#282828]" />
             </div>
 
-            <div className="flex flex-col lg:flex-row lg:space-x-8 lg:min-h-[650px]">
+            <div className="flex flex-col lg:flex-row lg:space-x-8">
               {/* Featured Category Story */}
               {firstStory && (
                 <Link
                   href={`/stories/${firstStory.id}`}
-                  className="block flex-1 lg:flex-grow-2 mb-0 lg:mb-0"
+                  className="block flex-1 lg:flex-grow-2"
                 >
-                  <div className="flex-1 lg:flex-grow-2 mb-0 lg:mb-0">
+                  <div className="flex-1 lg:flex-grow-2 h-full">
                     <div className="bg-white shadow-sm overflow-hidden rounded-t-lg lg:rounded-lg h-full flex flex-col">
                       <div className="relative h-[280px] lg:h-[400px]">
                         <img
@@ -288,64 +288,58 @@ export default function EditorsPicksSection({
               )}
 
               {/* Category Stories List */}
-              {restStories.length > 0 && (
-                <div className="lg:w-1/3">
-                  <div className="bg-white shadow-sm p-6 rounded-b-lg lg:rounded-lg h-full flex flex-col -mt-[1px]">
-                    <div className="space-y-4 flex-1 overflow-y-auto">
-                      {restStories.map((story) => (
-                        <Link
-                          key={story.id}
-                          href={`/stories/${story.id}`}
-                          className="block"
-                        >
-                          <div className="flex items-start space-x-3 group cursor-pointer">
-                            <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
-                            <div className="flex-1">
-                              <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 line-clamp-2">
-                                {story.title}
-                              </h3>
-                              <p className="text-sm text-gray-500 mt-1">
-                                {story.author || "Unknown Author"}
-                              </p>
-                            </div>
+              <div className="lg:w-1/3">
+                <div className="bg-white shadow-sm p-6 rounded-b-lg lg:rounded-lg h-full flex flex-col -mt-[1px]">
+                  <div className="space-y-4 flex-1 overflow-y-auto">
+                    {restStories.map((story) => (
+                      <Link
+                        key={story.id}
+                        href={`/stories/${story.id}`}
+                        className="block"
+                      >
+                        <div className="flex items-start space-x-3 group cursor-pointer">
+                          <div className="w-2 h-2 bg-[#F52A32] mt-2 flex-shrink-0"></div>
+                          <div className="flex-1">
+                            <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#D72B81] transition-colors duration-200 line-clamp-2">
+                              {story.title}
+                            </h3>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {story.author || "Unknown Author"}
+                            </p>
                           </div>
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Category Pagination */}
-                    {paginatedCategoryStories.length > 1 && (
-                      <div className="flex justify-between items-center mt-6 text-sm text-gray-500 border-t pt-4">
-                        <button
-                          onClick={() =>
-                            handleCategoryPage(category.id, "prev")
-                          }
-                          className="disabled:opacity-50"
-                          disabled={currentCategoryPage === 0}
-                        >
-                          Previous
-                        </button>
-                        <span>
-                          Page {currentCategoryPage + 1} of{" "}
-                          {paginatedCategoryStories.length}
-                        </span>
-                        <button
-                          onClick={() =>
-                            handleCategoryPage(category.id, "next")
-                          }
-                          className="disabled:opacity-50"
-                          disabled={
-                            currentCategoryPage ===
-                            paginatedCategoryStories.length - 1
-                          }
-                        >
-                          Next
-                        </button>
-                      </div>
-                    )}
+                        </div>
+                      </Link>
+                    ))}
                   </div>
+
+                  {/* Category Pagination */}
+                  {paginatedCategoryStories.length > 0 && (
+                    <div className="flex justify-between items-center mt-6 text-sm text-gray-500 border-t pt-4">
+                      <button
+                        onClick={() => handleCategoryPage(category.id, "prev")}
+                        className="disabled:opacity-50"
+                        disabled={currentCategoryPage === 0}
+                      >
+                        Previous
+                      </button>
+                      <span>
+                        Page {currentCategoryPage + 1} of{" "}
+                        {paginatedCategoryStories.length}
+                      </span>
+                      <button
+                        onClick={() => handleCategoryPage(category.id, "next")}
+                        className="disabled:opacity-50"
+                        disabled={
+                          currentCategoryPage ===
+                          paginatedCategoryStories.length - 1
+                        }
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         );

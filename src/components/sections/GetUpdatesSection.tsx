@@ -1,22 +1,33 @@
+"use client";
+
 import Image from "next/image";
 import { useState } from "react";
 
-export default function GetUpdatesSection() {
-  const [email, setEmail] = useState("");
+interface FormState {
+  email: string;
+  isSubmitting: boolean;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
+const GetUpdatesSection = () => {
+  const [formState, setFormState] = useState<FormState>({
+    email: "",
+    isSubmitting: false,
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormState((prev) => ({ ...prev, isSubmitting: true }));
     // Handle email subscription logic here
-    console.log("Email submitted:", email);
-    setEmail(""); // Clear form after submission
+    console.log("Email submitted:", formState.email);
+    setFormState({ email: "", isSubmitting: false }); // Clear form after submission
   };
 
   return (
     <section className="-mt-4">
-      <div className="container mx-auto px-1">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Email Subscription Section */}
-          <div className="bg-white shadow-sm rounded-lg p-6">
+          <div className="bg-white shadow-md rounded-lg p-6">
             <div className="flex items-center space-x-8 mb-6">
               <div className="w-16 h-16 flex-shrink-0">
                 <Image
@@ -36,17 +47,20 @@ export default function GetUpdatesSection() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formState.email}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, email: e.target.value }))
+                }
                 placeholder="Enter your email address"
                 className="w-full px-4 py-3 bg-[#DEDEDE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F52A32]"
                 required
               />
               <button
                 type="submit"
+                disabled={formState.isSubmitting}
                 className="w-full px-4 py-3 bg-[#D72B81] text-white font-medium rounded-lg hover:bg-[#905472] transition-colors duration-200"
               >
-                Get Me In
+                {formState.isSubmitting ? "Submitting..." : "Get Me In"}
               </button>
             </form>
           </div>
@@ -65,4 +79,6 @@ export default function GetUpdatesSection() {
       </div>
     </section>
   );
-}
+};
+
+export default GetUpdatesSection;
