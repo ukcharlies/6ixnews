@@ -318,7 +318,13 @@ export default function Home() {
             stories={filteredTopStories}
             isLoading={topStoriesLoading}
             error={topStoriesError}
-            title={selectedCategoryId ? "Category Stories" : "Top Stories"}
+            title={
+              selectedCategoryId
+                ? `${
+                    categories.find((c) => c.id === selectedCategoryId)?.name
+                  } Stories`
+                : "Top Stories"
+            }
           />
 
           {/* Horizontal Separator */}

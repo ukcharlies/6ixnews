@@ -3,6 +3,7 @@ import StoryCard from "@/components/ui/StoryCard";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Link from "next/link";
 import Image from "next/image";
+import { format } from "date-fns";
 
 interface TopStoriesSectionProps {
   stories: IStory[];
@@ -166,7 +167,8 @@ export default function TopStoriesSection({
 
       {/* Desktop View - Grid Layout */}
       <div className="hidden md:block">
-        <div className="grid grid-cols-4 grid-rows-2 gap-4 h-96">
+        {/* Main story grid */}
+        <div className="grid grid-cols-4 grid-rows-2 gap-4 h-96 mb-8">
           {/* First Story - Large (2x2) */}
           {firstStory && (
             <Link
@@ -204,52 +206,81 @@ export default function TopStoriesSection({
             </Link>
           )}
 
-          {/* Other Stories - Positioned based on count */}
-          {otherStories.slice(0, 4).map((story, index) => {
-            // For 3 total items (2 other stories), position diagonally
-            let gridClasses = "relative group cursor-pointer";
-            if (otherStories.length === 2) {
-              // Diagonal positioning: top-right and bottom-right
-              if (index === 0) {
-                gridClasses += " col-start-3 row-start-1"; // Top right
-              } else if (index === 1) {
-                gridClasses += " col-start-4 row-start-2"; // Bottom right
-              }
-            }
+          {/* Other top stories - first 4 only */}
+          {otherStories.slice(0, 4).map((story, index) => (
+            <Link
+              key={story.id}
+              href={`/stories/${story.id}`}
+              className="relative group cursor-pointer"
+            >
+              <div className="relative w-full h-full rounded-lg overflow-hidden">
+                <Image
+                  src={story.banner_image || "/placeholder-image.jpg"}
+                  alt={story.title || "News story"}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                {/* Dark overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-            return (
-              <Link
-                key={story.id}
-                href={`/stories/${story.id}`}
-                className={gridClasses}
-              >
-                <div className="relative w-full h-full rounded-lg overflow-hidden">
-                  <Image
-                    src={story.banner_image || "/placeholder-image.jpg"}
-                    alt={story.title || "News story"}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-                  {/* Text content at bottom */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                    <span
-                      className="text-xs font-semibold mb-1 block"
-                      style={{ color: "#F85FD0" }}
-                    >
-                      News Today
-                    </span>
-                    <h3 className="text-sm font-bold leading-tight line-clamp-2">
-                      {story.title}
-                    </h3>
-                  </div>
+                {/* Text content at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                  <span
+                    className="text-xs font-semibold mb-1 block"
+                    style={{ color: "#F85FD0" }}
+                  >
+                    News Today
+                  </span>
+                  <h3 className="text-sm font-bold leading-tight line-clamp-2">
+                    {story.title}
+                  </h3>
                 </div>
-              </Link>
-            );
-          })}
+              </div>
+            </Link>
+          ))}
         </div>
+
+        {/* Other Stories in Politics Section */}
+        {otherStories.length > 4 && (
+          <>
+            <h2 className="text-2xl font-bold mb-6 border-l-4 border-[#813D97] pl-4">
+              OTHER STORIES IN POLITICS
+            </h2>
+            <div className="grid grid-cols-1 gap-8">
+              {otherStories.slice(4).map((story) => (
+                <Link href={`/stories/${story.id}`} key={story.id}>
+                  <div className="flex flex-col lg:flex-row gap-6 group cursor-pointer">
+                    <div className="relative w-full lg:w-1/3 aspect-[16/9]">
+                      <Image
+                        src={story.banner_image || "/placeholder-image.jpg"}
+                        alt={story.title}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {story.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {format(
+                          new Date(story.created_at),
+                          "h:mm a, MMMM d, yyyy"
+                        )}
+                      </p>
+                      <p className="text-gray-600">
+                        {story.description?.slice(0, 200)}...
+                      </p>
+                      <button className="px-4 py-2 bg-[white] text-#999999 rounded-full hover:bg-opacity-90 transition-colors text-sm">
+                        Continue Reading
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
