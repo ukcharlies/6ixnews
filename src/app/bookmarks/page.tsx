@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppSelector } from "@/lib/hooks/redux";
+import { useBookmarks } from "@/lib/hooks/useBookmarks";
 import { useQuery } from "@tanstack/react-query";
 import TopStoriesSection from "@/components/sections/TopStoriesSection";
 import {
@@ -8,10 +8,18 @@ import {
   fetchLatestStories,
   fetchTopStories,
 } from "@/lib/api/client";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { initializeBookmarks } from "@/lib/store/bookmarkSlice";
 import { IStory } from "@/types/story";
 
 export default function BookmarksPage() {
-  const bookmarkIds = useAppSelector((state) => state.bookmarks.ids);
+  const dispatch = useDispatch();
+  const { bookmarkIds, isClient } = useBookmarks();
+
+  useEffect(() => {
+    dispatch(initializeBookmarks());
+  }, [dispatch]);
 
   const { data: editorsPicks = [] } = useQuery({
     queryKey: ["editorsPicks"],
@@ -49,6 +57,10 @@ export default function BookmarksPage() {
         ? story.banner_image
         : `${process.env.NEXT_PUBLIC_API_URL}${story.banner_image}`,
     }));
+
+  if (!isClient) {
+    return null; // Prevent flash of content during hydration
+  }
 
   if (bookmarkIds.length === 0) {
     return (

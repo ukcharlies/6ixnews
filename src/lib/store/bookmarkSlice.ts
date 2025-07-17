@@ -4,22 +4,20 @@ interface BookmarkState {
   ids: number[];
 }
 
-const loadFromLocalStorage = (): number[] => {
-  if (typeof window !== "undefined") {
-    const saved = localStorage.getItem("bookmarks");
-    return saved ? JSON.parse(saved) : [];
-  }
-  return [];
-};
-
 const initialState: BookmarkState = {
-  ids: loadFromLocalStorage(),
+  ids: [],
 };
 
 export const bookmarkSlice = createSlice({
   name: "bookmarks",
   initialState,
   reducers: {
+    initializeBookmarks: (state) => {
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem("bookmarks");
+        state.ids = saved ? JSON.parse(saved) : [];
+      }
+    },
     toggleBookmark: (state, action: PayloadAction<number>) => {
       const index = state.ids.indexOf(action.payload);
       if (index === -1) {
@@ -39,5 +37,5 @@ export const selectIsBookmarked = (
   return state.bookmarks.ids.includes(id);
 };
 
-export const { toggleBookmark } = bookmarkSlice.actions;
+export const { toggleBookmark, initializeBookmarks } = bookmarkSlice.actions;
 export default bookmarkSlice.reducer;
