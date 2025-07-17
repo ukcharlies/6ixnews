@@ -8,6 +8,7 @@ export default function GetUpdatesSection() {
     e.preventDefault();
     // Handle email subscription logic here
     console.log("Email submitted:", email);
+    setEmail(""); // Clear form after submission
   };
 
   return (
