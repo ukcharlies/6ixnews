@@ -32,5 +32,12 @@ export const bookmarkSlice = createSlice({
   },
 });
 
+export const selectIsBookmarked = (
+  state: { bookmarks: BookmarkState },
+  id: number
+) => {
+  return state.bookmarks.ids.includes(id);
+};
+
 export const { toggleBookmark } = bookmarkSlice.actions;
 export default bookmarkSlice.reducer;

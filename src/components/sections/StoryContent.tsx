@@ -48,7 +48,7 @@ export default function StoryContent({ story }: StoryContentProps) {
   const { data: topStories = [], isLoading: topStoriesLoading } = useQuery({
     queryKey: ["relatedTopStories"],
     queryFn: async () => {
-      const result = await fetchTopStories(1, 6);
+      const result = await fetchTopStories();
       return result;
     },
     staleTime: 5 * 60 * 1000,
