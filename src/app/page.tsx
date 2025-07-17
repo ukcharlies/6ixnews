@@ -50,12 +50,9 @@ export default function Home() {
   } = useQuery({
     queryKey: ["topStories", selectedCategoryId],
     queryFn: async () => {
-      console.log("Fetching top stories for category:", selectedCategoryId);
-      const result = selectedCategoryId
+      return selectedCategoryId
         ? await fetchCategoryStories(selectedCategoryId, 1, 15)
         : await fetchTopStories();
-      console.log("Top stories result:", result);
-      return result;
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -66,12 +63,7 @@ export default function Home() {
     error: editorsPicksError,
   } = useQuery({
     queryKey: ["editorsPicks"],
-    queryFn: async () => {
-      console.log("Fetching editors picks...");
-      const stories = await fetchEditorsPicks(1, 15);
-      console.log("Editors picks result:", stories);
-      return stories;
-    },
+    queryFn: () => fetchEditorsPicks(1, 15),
     staleTime: 3 * 60 * 1000,
     enabled: !selectedCategoryId,
   });
@@ -82,12 +74,7 @@ export default function Home() {
     error: featuredStoriesError,
   } = useQuery({
     queryKey: ["featuredStories"],
-    queryFn: async () => {
-      console.log("Fetching featured stories...");
-      const result = await fetchFeaturedStories(1, 15);
-      console.log("Featured stories result:", result);
-      return result;
-    },
+    queryFn: () => fetchFeaturedStories(1, 15),
     staleTime: 3 * 60 * 1000,
     enabled: !selectedCategoryId,
   });
@@ -98,12 +85,7 @@ export default function Home() {
     error: latestStoriesError,
   } = useQuery({
     queryKey: ["latestStories"],
-    queryFn: async () => {
-      console.log("Fetching latest stories...");
-      const result = await fetchLatestStories(1, 7);
-      console.log("Latest stories result:", result);
-      return result;
-    },
+    queryFn: () => fetchLatestStories(1, 7),
     staleTime: 1 * 60 * 1000,
     enabled: !selectedCategoryId,
   });
@@ -114,12 +96,7 @@ export default function Home() {
     error: missedStoriesError,
   } = useQuery({
     queryKey: ["missedStories"],
-    queryFn: async () => {
-      console.log("Fetching missed stories...");
-      const result = await fetchMissedStories(1, 5);
-      console.log("Missed stories result:", result);
-      return result;
-    },
+    queryFn: () => fetchMissedStories(1, 5),
     staleTime: 3 * 60 * 1000,
     enabled: !selectedCategoryId,
   });
@@ -219,23 +196,10 @@ export default function Home() {
     );
   }, [missedStories, searchQuery]);
 
-  // Debug: Log all data
-  console.log("All data:", {
-    categories,
-    topStories,
-    editorsPicks,
-    featuredStories,
-    latestStories,
-    missedStories,
-    selectedCategoryId,
-    searchQuery,
-  });
-
   // Check for critical errors
   const hasError = categoriesError || topStoriesError;
 
   if (hasError) {
-    console.error("Critical errors:", { categoriesError, topStoriesError });
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -300,19 +264,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Debug Info */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
-            <p>
-              <strong>Debug Info:</strong>
-            </p>
-            <p>Categories: {categories.length}</p>
-            <p>Top Stories: {topStories.length}</p>
-            <p>Editor's Picks: {editorsPicks.length}</p>
-            <p>Featured Stories: {featuredStories.length}</p>
-            <p>Latest Stories: {latestStories.length}</p>
-            <p>Missed Stories: {missedStories.length}</p>
-          </div>
-
           {/* Top Stories / Category Stories Section */}
           <TopStoriesSection
             stories={filteredTopStories}
@@ -329,7 +280,7 @@ export default function Home() {
 
           {/* Horizontal Separator */}
           {!selectedCategoryId && (
-            <div className="border-t border-gray-200 my-8"></div>
+            <div className="border-t border-gray-200 my-2"></div>
           )}
 
           {/* Latest News Section - positioned right after top stories */}
