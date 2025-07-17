@@ -11,6 +11,12 @@ const nextConfig = {
       },
     ],
   },
+  reactStrictMode: true,
+  experimental: {
+    // Ensures consistent hydration
+    optimizeFonts: true,
+    scrollRestoration: true,
+  },
 };
 
 module.exports = nextConfig;
