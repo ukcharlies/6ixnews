@@ -232,3 +232,11 @@ export const fetchSingleStory = async (storyId: number): Promise<IStory> => {
   }
   return response;
 };
+
+export async function fetchStoryById(id: string) {
+  const response = await fetch(`${API_BASE}/stories/${id}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch story");
+  }
+  return response.json();
+}
