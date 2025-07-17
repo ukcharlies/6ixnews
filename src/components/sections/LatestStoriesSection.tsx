@@ -6,12 +6,14 @@ interface LatestStoriesSectionProps {
   stories: IStory[];
   isLoading?: boolean;
   error?: Error | null;
+  title?: string;
 }
 
 export default function LatestStoriesSection({
   stories,
   isLoading,
   error,
+  title = "Latest News",
 }: LatestStoriesSectionProps) {
   const [focusedCardIndex, setFocusedCardIndex] = useState<number>(0);
 
@@ -33,7 +35,7 @@ export default function LatestStoriesSection({
             className="text-2xl font-bold uppercase border-l-4 border-[#813D97] pl-4"
             style={{ minHeight: "24px" }}
           >
-            LATEST NEWS
+            {title}
           </h2>
         </div>
         <ErrorMessage message="Failed to load latest news" />
@@ -49,7 +51,7 @@ export default function LatestStoriesSection({
             className="text-2xl font-bold uppercase border-l-4 border-[#813D97] pl-4"
             style={{ minHeight: "24px" }}
           >
-            LATEST NEWS
+            {title}
           </h2>
           <div className="flex space-x-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -102,7 +104,7 @@ export default function LatestStoriesSection({
           className="text-2xl font-bold uppercase border-l-4 border-[#813D97] pl-4"
           style={{ minHeight: "24px" }}
         >
-          LATEST NEWS
+          {title}
         </h2>
         <div className="flex space-x-2">
           {safeStories.slice(0, 7).map((_, index) => (
