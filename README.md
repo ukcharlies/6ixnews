@@ -69,7 +69,7 @@
 # News/Blog Web Application
 
 ```bash
-git clone https://github.com/yourusername/6ixnews.git
+git clone https://github.com/ukcharlies/6ixnews.git
 cd 6ixnews
 ```
 
